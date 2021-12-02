@@ -1,3 +1,4 @@
+import { Level } from 'src/constants/level.enum';
 import {
   BaseEntity,
   Column,
@@ -19,16 +20,16 @@ export class Package extends BaseEntity {
   // numberQuestion: number;
 
   @Column()
-  level: number; // enum
+  level: Level; // enum
+
+  @Column()
+  isHidden: boolean;
 
   @Column({ name: 'time_out' })
   timeOut: number;
 
-  @Column({ name: 'vote_up' })
-  voteUp: number;
-
-  @Column({ name: 'vote_down' })
-  voteDown: number;
+  @Column()
+  like: number;
 
   @OneToMany(() => QuestionPackage, (p) => p.package)
   questionPackages: QuestionPackage[];

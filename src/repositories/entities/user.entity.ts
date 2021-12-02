@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { UserStatus } from '../../constants/user-status.enum';
+import { Question } from './question.entity';
 import { Profile } from './user-profile.entity';
 import { UserToken } from './user-token.entity';
 
@@ -50,4 +51,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => UserToken, (ut) => ut.user)
   userTokens: UserToken[];
+
+  @OneToMany(() => Question, (q) =>q.user)
+  questions: Question[];
 }

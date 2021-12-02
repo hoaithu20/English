@@ -12,6 +12,7 @@ export default () => ({
     migrations: ['dist/migrations/*.js'],
     factories: ['dist/migrations/factories/*.factory{.ts,.js}'],
     seeds: ['dist/migrations/seeders/*.seed{.ts,.js}'],
+    logging: true,
   },
   httpConfig: {
     timeout: parseInt(process.env.HTTP_TIMEOUT, 10) || 30000,
