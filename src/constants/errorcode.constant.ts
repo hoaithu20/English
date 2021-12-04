@@ -1,7 +1,8 @@
 export enum ErrorCode {
-  SUCCESS = '00',
   GENERAL_ERROR = '99',
-  BAD_REQUEST = '01',
+  BAD_REQUEST= '400',
+  SUCCESS = '00',
+  UNSUCCESS = '01',
   PAGE_INDEX_NOT_INTEGER = '02',
   PAGE_INDEX_MIN_ONE = '03',
   PAGE_SIZE_NOT_INTEGER = '04',
