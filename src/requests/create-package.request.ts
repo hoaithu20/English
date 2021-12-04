@@ -1,12 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsAlpha, IsArray, IsBoolean, IsEnum, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsString } from "class-validator";
 import { Level } from "src/constants/level.enum";
 import { QuestionStatus } from "src/constants/question-status.enum";
 
-export class CreatePackage {
+export class CreatePackageRequest {
   @ApiProperty()
   @IsString()
-  title: string;
+  time: number;
 
   @ApiProperty()
   @IsEnum(Level)
@@ -19,6 +19,10 @@ export class CreatePackage {
   @ApiProperty()
   @IsBoolean()
   isHidden: boolean;
+
+  @ApiProperty()
+  @IsBoolean()
+  total: number;
 
   @ApiProperty()
   @IsArray()

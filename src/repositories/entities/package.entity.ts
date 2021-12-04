@@ -1,36 +1,44 @@
 import { Level } from 'src/constants/level.enum';
+import { QuestionStatus } from 'src/constants/question-status.enum';
 import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { QuestionPackage } from './question-package.entity';
+import { User } from './user.entity';
 
 @Entity('package')
 export class Package extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  title: string;
+  @ManyToOne(() => User, (u) => u.packages)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
-  // @Column({name: 'number_question'})
-  // numberQuestion: number;
+  @Column({default: QuestionStatus.PRIVATE})
+  status: QuestionStatus;
 
-  @Column()
+  @Column({name: 'total_question'})
+  totalQuestion: number;
+
+  @Column({default: Level.EASY})
   level: Level; // enum
 
-  @Column()
+  @Column({default: false})
   isHidden: boolean;
 
   @Column({ name: 'time_out' })
   timeOut: number;
 
-  @Column()
+  @Column({ default: 0})
   like: number;
 
-  @OneToMany(() => QuestionPackage, (p) => p.package)
-  questionPackages: QuestionPackage[];
+  @Column({ name: 'question_ids', type: 'json' })
+  questionIds: number[];
+
 }

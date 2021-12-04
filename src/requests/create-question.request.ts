@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsEmail, IsEnum, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsEmail, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { Level } from "src/constants/level.enum";
 import { QuestionStatus } from "src/constants/question-status.enum";
 
@@ -37,10 +37,12 @@ export class CreateQuestionRequest {
   isHidden: boolean;
 
   @ApiProperty()
+  @IsNumber()
+  totalAnswer: number;
+
+  @ApiProperty()
   @IsArray()
   @Type(() => Answer)
   answers: Answer[];
-
-
 
 }
