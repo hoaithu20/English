@@ -1,6 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { request } from 'express';
 import { LoginRequest } from 'src/requests/login.request';
 import { SignupRequest } from 'src/requests/signup.request';
 import { AuthService } from 'src/services/auth.service';
@@ -26,8 +25,8 @@ export class AuthController {
     return await this.authService.login(request.username, request.password);
   }
 
-  @Post('forgot-password')
-  async forgotPassword() {
-    return await this.authService.forgotPassword(1);
-  }
+  // @Post('forgot-password')
+  // async forgotPassword() {
+  //   return await this.authService.forgotPassword(1);
+  // }
 }

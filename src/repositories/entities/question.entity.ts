@@ -44,6 +44,9 @@ export class Question extends BaseEntity {
   @OneToMany(() => Answer, (a) => a.question)
   answers: Answer[];
 
+  @Column({ name: 'correct_answer'})
+  correctAnswer: number;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

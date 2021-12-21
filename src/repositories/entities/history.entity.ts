@@ -9,28 +9,35 @@ import {
   PrimaryGeneratedColumn,
   RelationId,
 } from 'typeorm';
+import { Package } from './package.entity';
 import { User } from './user.entity';
 
 @Entity('history')
-export class UserToken extends BaseEntity {
+export class History extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.userTokens)
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @RelationId((userToken: UserToken) => userToken.user)
+  @RelationId((h: History) => h.user)
   userId: number;
 
-  @Column({name: 'package_id'})
+  @ManyToOne(() => Package)
+  @JoinColumn({ name: 'package_id' })
+  package: Package;
+
+  @RelationId((h: History) => h.package)
   packageId: number;
 
   @Column({name: 'time'})
   time: number;
 
-  @Column({name: 'count_true'})
-  countTrue: number;
+  @Column({name: 'point', type: 'decimal', precision: 5, scale: 2})
+  point: string
+
+  @Column({})
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

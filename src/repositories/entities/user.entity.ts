@@ -11,6 +11,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { UserStatus } from '../../constants/user-status.enum';
+import { History } from './history.entity';
 import { Package } from './package.entity';
 import { Question } from './question.entity';
 import { Profile } from './user-profile.entity';
@@ -58,4 +59,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Package, (p) => p.user)
   packages: Package[];
+
+  @OneToMany(() => History, (h) => h.user)
+  histories: History[];
 }

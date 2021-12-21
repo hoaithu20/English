@@ -18,7 +18,7 @@ export class QuestionsController {
     private readonly questionService: QuestionsService,
   ) { }
 
- // @UseGuards(JwtAuthGuard)
+ @UseGuards(JwtAuthGuard)
   @ApiBody({
     type: PagingRequest
   })
