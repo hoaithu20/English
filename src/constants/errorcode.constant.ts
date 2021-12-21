@@ -12,4 +12,6 @@ export enum ErrorCode {
   SIGNUP_FAILED = '08',
   USER_NOT_EXIST = '09',
   INCORRECT_PASSWORD = '10',
+  NOT_FOUND_PACKAGE = '11',
+  PASSWORD_NOT_MATCH = '12',
 }

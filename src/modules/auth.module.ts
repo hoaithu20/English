@@ -9,6 +9,8 @@ import { JwtStrategy } from 'src/security/jwt.strategy';
 import { LocalStrategy } from 'src/security/local.strategy';
 import { AuthService } from 'src/services/auth.service';
 import { QuestionsModule } from './questions.module';
+import { PackagesModule } from './packages.module';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
@@ -21,7 +23,9 @@ import { QuestionsModule } from './questions.module';
     }),
     ConfigModule,
     QuestionsModule,
-    PassportModule
+    PassportModule,
+    PackagesModule,
+    MailModule,
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],

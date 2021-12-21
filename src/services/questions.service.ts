@@ -10,6 +10,7 @@ import { CreateQuestionRequest } from 'src/requests/create-question.request';
 import { PagingRequest } from 'src/requests/paging.request';
 import { Connection } from 'typeorm';
 import _ from 'lodash';
+import { GetDetailPackageRequest } from 'src/requests/get-detail-package.request';
 
 @Injectable()
 export class QuestionsService {
@@ -20,34 +21,32 @@ export class QuestionsService {
     private readonly connection: Connection
   ) { }
 
-  async getListQuestion(request:  PagingRequest) {
+  async getListPackageOfUser() {
+
+  }
+
+  async getListQuestion(request: PagingRequest) {
     const pageSize = request.pageSize || 1;
     const pageIndex = request.pageIndex || 10;
-   
+
     const [questions, count] = await this.questionRepository
       .createQueryBuilder('q')
+      .skip((pageIndex - 1) * pageSize)
+      .take(pageSize)
       .innerJoinAndSelect('q.answers', 'a')
       .where('q.status = :status', { status: QuestionStatus.PUBLIC })
-      .offset((pageIndex - 1) * pageSize)
-      .limit(pageSize)
       .getManyAndCount();
+    const questionMap = questions.map((item) => ({
+      ...item,
+      answers: _.shuffle(item.answers)
+    }));
 
-    const a = [1,2,3]
-    console.log(_.shuffle(a))
-    
-
-    // const questionMap = questions.map((item) => ({
-    //   ...item,
-    //   answers: _.sampleSize(item.answers, 5)
-    // }));
-    // console.log( _.sampleSize(questionMap, count))
-    // return [ _.sampleSize(questionMap, count), count ]
-    return [{},0]
+    return [questionMap, count]
 
   }
 
   async createQuestion(userId: number, request: CreateQuestionRequest) {
-    const a = [1,2,3]
+    const a = [1, 2, 3]
     console.log(_.shuffle(a))
     console.log(request);
     const { title, level, status, isHidden, answers } = request;
@@ -77,19 +76,5 @@ export class QuestionsService {
         code: ErrorCode.UNSUCCESS,
       });
     }
-  }
-
-  async createPackage(userId: number, request: CreatePackageRequest) {
-    await this.connection.transaction(async (manager) => {
-      const newPackage = await this.packageRepository.create({
-        user: userId as any,
-        totalQuestion: request.total,
-        timeOut: request.time,
-        level: request.level,
-        isHidden: request.isHidden,
-        questionIds: request.question
-      });
-      await manager.save(newPackage)
-    })
   }
 }
