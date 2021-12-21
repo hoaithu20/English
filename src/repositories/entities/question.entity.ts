@@ -26,6 +26,9 @@ export class Question extends BaseEntity {
   @Column({ name: 'vote_down' })
   voteDown: number;
 
+  @Column({ name: 'correct_answer'})
+  correctAnswer: number;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
