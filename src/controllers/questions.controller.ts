@@ -24,12 +24,10 @@ export class QuestionsController {
   })
   @Get('list-random-question')
   async getListQuestion(@Body() request: PagingRequest) {
-    console.log(request);
-    await this.questionService.getListQuestion(request);
-    // const [result, count] = await this.questionService.getListQuestion(request);
-    // return PaginateResult.init(
-    //   result, count
-    // )
+    const [result, count] = await this.questionService.getListQuestion(request);
+    return PaginateResult.init(
+      result, count
+    )
   }
 
   @UseGuards(JwtAuthGuard)
@@ -39,14 +37,5 @@ export class QuestionsController {
   @Post('create-question')
   async createQuestion(@CurrUser() user: User, @Body() request: CreateQuestionRequest) {
     return this.questionService.createQuestion(user.id, request);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBody({
-    type: CreatePackageRequest
-  })
-  @Post('create-package')
-  async createPackage(@CurrUser() user: User, request: CreatePackageRequest) {
-    return this.questionService.createPackage(user.id, request);
   }
 }

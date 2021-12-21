@@ -6,8 +6,6 @@ import { AppService } from './app.service';
 import configuration from './configs/configuration';
 import { AuthModule } from './modules/auth.module';
 import { UserModule } from './modules/user.module';
-import { QuestionsService } from './services/questions.service';
-import { QuestionsController } from './controllers/questions.controller';
 import { QuestionsModule } from './modules/questions.module';
 
 @Module({
