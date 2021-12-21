@@ -3,11 +3,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from 'typeorm';
-import { CategoryStatus } from '../../constants/category-status.enum';
+import { Question } from './question.entity';
 
 @Entity('answer')
 export class Answer extends BaseEntity {
@@ -15,14 +18,17 @@ export class Answer extends BaseEntity {
   id: number;
 
   @Column({ nullable: false })
-  name: string;
+  content: string;
 
-  @Column({
-    name: 'status',
-    nullable: false,
-    default: CategoryStatus.ACTIVE,
-  })
-  status: CategoryStatus;
+  @Column({name: 'is_true'})
+  isTrue: boolean;
+
+  @ManyToOne(() => Question, (q) => q.answers)
+  @JoinColumn({ name: 'question_id' })
+  question: Question;
+
+  @RelationId((a: Answer) => a.question)
+  questionId: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

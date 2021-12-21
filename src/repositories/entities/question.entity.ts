@@ -1,13 +1,18 @@
+import { Level } from 'src/constants/level.enum';
+import { QuestionStatus } from 'src/constants/question-status.enum';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionPackage } from './question-package.entity';
+import { Answer } from './answer.entity';
+import { User } from './user.entity';
 
 @Entity('question')
 export class Question extends BaseEntity {
@@ -15,16 +20,29 @@ export class Question extends BaseEntity {
   id: number;
 
   @Column()
-  content: string;
+  title: string;
 
-  @Column()
-  status: number; // add enum;
+  @Column({default: QuestionStatus.PRIVATE})
+  status: QuestionStatus; // add enum;
 
-  @Column({ name: 'vote_up' })
-  voteUp: number;
+  @Column({default: Level.EASY})
+  level: Level;
 
-  @Column({ name: 'vote_down' })
-  voteDown: number;
+  @Column({default: false})
+  isHidden: boolean;
+
+  @Column({default: 0})
+  like: number;
+
+  @Column({name: 'total_answer'})
+  totalAnswer: number;
+
+  @ManyToOne(() => User, (u) => u.questions)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @OneToMany(() => Answer, (a) => a.question)
+  answers: Answer[];
 
   @Column({ name: 'correct_answer'})
   correctAnswer: number;
@@ -34,7 +52,4 @@ export class Question extends BaseEntity {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
-
-  @OneToMany(() => QuestionPackage, (q) => q.question)
-  questionPackages: QuestionPackage[];
 }

@@ -3,9 +3,11 @@ import { ErrorCode } from 'src/constants/errorcode.constant';
 import { UserRepository } from 'src/repositories/user.repository';
 import { SignupRequest } from 'src/requests/signup.request';
 import { Connection } from 'typeorm';
-import * as jwt from 'jsonwebtoken';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { MailService } from 'src/mail/mail.service';
+import { ChangePasswordRequest } from 'src/requests/change-password.requesr';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +15,8 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private readonly connection: Connection,
     private readonly configService: ConfigService,
+    private readonly jwtService: JwtService,
+    private mailService: MailService,
   ) {}
   async validate(username: string, password: string) {
     throw new Error('Method not implemented.');
@@ -70,12 +74,31 @@ export class AuthService {
         code: ErrorCode.INCORRECT_PASSWORD,
       });
     }
-    const token = jwt.sign(
-      {
-        encode: user.id,
-      },
-      this.configService.get('authConfig').secretKey,
-    );
+    const payload = {id: user.id}
+    const token = this.jwtService.sign(payload)
     return { token: token };
+  }
+
+  async forgotPassword(email: string) {
+    const user = await this.userRepository.findOne({email});
+    if(!user) {
+      throw new BadRequestException({
+        code: ErrorCode.USER_NOT_EXIST
+      })
+    }
+    const obj = {
+      to: email,
+      otp: '123456',
+    };
+    await this.mailService.sendMailForgotPassword(obj);
+  }
+
+  async resetPassword(request: ChangePasswordRequest) {
+    if (request.newPassword !== request.confirmPassword) {
+      throw new BadRequestException({
+        code: ErrorCode.PASSWORD_NOT_MATCH
+      })
+    }
+    
   }
 }
