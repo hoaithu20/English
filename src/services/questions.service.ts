@@ -46,9 +46,6 @@ export class QuestionsService {
   }
 
   async createQuestion(userId: number, request: CreateQuestionRequest) {
-    const a = [1, 2, 3]
-    console.log(_.shuffle(a))
-    console.log(request);
     const { title, level, status, isHidden, answers } = request;
     try {
       await this.connection.transaction(async (manager) => {
@@ -62,6 +59,7 @@ export class QuestionsService {
         });
 
         await manager.save(newQuestion);
+        let correctAnswer;
         for (const answer of answers) {
           const newAnswer = this.answerRepository.create({
             content: answer.content,
@@ -69,7 +67,12 @@ export class QuestionsService {
             question: newQuestion,
           });
           await manager.save(newAnswer);
+          if (newAnswer.isTrue = true) {
+            correctAnswer = newAnswer.id;
+          }
         }
+        newQuestion.correctAnswer = correctAnswer;
+        await manager.save(newQuestion);
       });
     } catch (err) {
       throw new BadRequestException({

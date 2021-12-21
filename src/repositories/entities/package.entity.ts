@@ -9,6 +9,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { History } from './history.entity';
 import { User } from './user.entity';
 
 @Entity('package')
@@ -19,6 +20,9 @@ export class Package extends BaseEntity {
   @ManyToOne(() => User, (u) => u.packages)
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @OneToMany(() => History, (h) => h.package)
+  histories: History[];
 
   @Column({default: QuestionStatus.PRIVATE})
   status: QuestionStatus;
@@ -37,6 +41,9 @@ export class Package extends BaseEntity {
 
   @Column({ default: 0})
   like: number;
+
+  @Column({})
+  name: string;
 
   @Column({ name: 'question_ids', type: 'json' })
   questionIds: number[];

@@ -8,13 +8,17 @@ class Questions {
 
   @ApiProperty()
   @IsBoolean()
-  check: boolean;
+  answerId: number;
 }
 
-export class doPackageRequest {
+export class DoPackageRequest {
   @ApiProperty()
   @IsNumber()
   packageId: number;
+
+  @ApiProperty()
+  @IsNumber()
+  time: number;
 
   @ApiProperty()
   @IsArray()
