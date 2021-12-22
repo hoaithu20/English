@@ -1,1 +1,0 @@
-{"version":3,"file":"PaginateResult.js","sourceRoot":"","sources":["../../../src/responses/PaginateResult.ts"],"names":[],"mappings":";;;AAAA,MAAa,cAAc;IACzB,YAAqB,KAAU,EAAW,KAAa;QAAlC,UAAK,GAAL,KAAK,CAAK;QAAW,UAAK,GAAL,KAAK,CAAQ;IAAG,CAAC;IAE3D,MAAM,CAAC,IAAI,CAAC,KAAK,EAAE,KAAK;QACtB,OAAO,IAAI,cAAc,CAAC,KAAK,EAAE,KAAK,CAAC,CAAC;IAC1C,CAAC;CACF;AAND,wCAMC"}
