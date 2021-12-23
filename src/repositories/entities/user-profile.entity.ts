@@ -1,8 +1,10 @@
+import { Sex } from 'src/constants/sex.enum';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -12,17 +14,20 @@ export class Profile extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({nullable: true})
   avatar: string;
 
   @Column({ name: 'date_of_birth' })
   dateOfBirth: Date;
 
-  @Column()
+  @Column({nullable: true})
   website: string;
 
-  @Column()
+  @Column({nullable: true})
   country: string;
+
+  @Column({nullable: true})
+  sex: Sex;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
