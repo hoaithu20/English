@@ -4,10 +4,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from './user.entity';
 
 @Entity('profile')
 export class Profile extends BaseEntity {
@@ -17,14 +19,18 @@ export class Profile extends BaseEntity {
   @Column({nullable: true})
   avatar: string;
 
+  @OneToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
   @Column({ name: 'date_of_birth' })
   dateOfBirth: Date;
 
-  @Column({nullable: true})
-  website: string;
+  // @Column({nullable: true})
+  // website: string;
 
-  @Column({nullable: true})
-  country: string;
+  // @Column({nullable: true})
+  // country: string;
 
   @Column({nullable: true})
   sex: Sex;
