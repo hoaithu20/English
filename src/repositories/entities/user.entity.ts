@@ -41,10 +41,6 @@ export class User extends BaseEntity {
   @Column({ default: UserRole.USER })
   role: UserRole;
 
-  @OneToOne(() => Profile)
-  @JoinColumn({ name: 'profile_id' })
-  profile?: Profile;
-
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

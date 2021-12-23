@@ -38,6 +38,11 @@ export class AuthService {
         code: ErrorCode.USERNAME_EXISTED,
       });
     }
+    if (request.password !== request.confirmPassword) {
+      throw new BadRequestException({
+        code: ErrorCode.PASSWORD_NOT_MATCH,
+      })
+    }
     try {
       await this.connection.transaction(async (manager) => {
         const hash = await bcrypt.hash(

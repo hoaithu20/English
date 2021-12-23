@@ -25,6 +25,11 @@ export class SignupRequest {
   password: string;
 
   @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  confirmPassword: string;
+
+  @ApiProperty()
   @IsOptional()
   @IsEnum(Language)
   language: Language;
