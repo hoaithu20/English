@@ -22,7 +22,7 @@ export class Question extends BaseEntity {
   @Column()
   title: string;
 
-  @Column({default: QuestionStatus.PRIVATE})
+  @Column({default: QuestionStatus.PUBLIC})
   status: QuestionStatus; // add enum;
 
   @Column({default: Level.EASY})
@@ -44,7 +44,7 @@ export class Question extends BaseEntity {
   @OneToMany(() => Answer, (a) => a.question)
   answers: Answer[];
 
-  @Column({ name: 'correct_answer'})
+  @Column({ name: 'correct_answer', default: 0})
   correctAnswer: number;
 
   @CreateDateColumn({ name: 'created_at' })

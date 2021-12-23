@@ -47,7 +47,7 @@ export class QuestionsService {
 
   async createQuestion(userId: number, request: CreateQuestionRequest) {
     const { title, level, status, isHidden, answers } = request;
-    try {
+   //try {
       await this.connection.transaction(async (manager) => {
         const newQuestion = this.questionRepository.create({
           title,
@@ -74,10 +74,10 @@ export class QuestionsService {
         newQuestion.correctAnswer = correctAnswer;
         await manager.save(newQuestion);
       });
-    } catch (err) {
-      throw new BadRequestException({
-        code: ErrorCode.UNSUCCESS,
-      });
-    }
+    // } catch (err) {
+    //   throw new BadRequestException({
+    //     code: ErrorCode.UNSUCCESS,
+    //   });
+    // }
   }
 }

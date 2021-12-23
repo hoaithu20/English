@@ -19,7 +19,7 @@ export default () => ({
   },
   authConfig: {
     secretKey: process.env.SECRET_KEY,
-    saltOrRounds: process.env.SALT_OR_ROUNDS,
+    saltOrRounds: parseInt(process.env.SALT_OR_ROUNDS),
   },
   questionConfig: {
     maxPoint: parseInt(process.env.MAX_POINT)
