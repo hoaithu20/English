@@ -8,13 +8,13 @@ import { MailService } from './mail.service';
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: "smtp.gmail.com",
+        host: 'smtp.gmail.com',
         port: 465,
         secure: true,
         auth: {
-          user: "yoonabar@gmail.com",
-          pass: "shynobita"
-        }
+          user: 'yoonabar@gmail.com',
+          pass: 'shynobita',
+        },
       },
       defaults: {
         from: '"Vatta Toeic" <noreply@example.com>',
@@ -31,4 +31,4 @@ import { MailService } from './mail.service';
   providers: [MailService],
   exports: [MailService], // 👈 export for DI
 })
-export class MailModule { }
+export class MailModule {}

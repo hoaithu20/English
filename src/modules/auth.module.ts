@@ -17,8 +17,8 @@ import { MailModule } from 'src/mail/mail.module';
     JwtModule.register({
       secret: 'vatta',
       signOptions: {
-        expiresIn: '7d' ,
-      }
+        expiresIn: '7d',
+      },
     }),
     ConfigModule,
     QuestionsModule,

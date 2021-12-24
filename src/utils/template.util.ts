@@ -12,4 +12,3 @@ export function readTemplateForgotPassword(obj: any) {
     .replace('#{email_reset}', obj.email)
     .replace('#{link_reset}', obj.link);
 }
-

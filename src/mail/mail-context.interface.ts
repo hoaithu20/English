@@ -5,4 +5,3 @@ export interface MailContext {
 export interface OtpEmail extends MailContext {
   otp: number;
 }
-

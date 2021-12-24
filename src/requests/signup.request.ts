@@ -24,23 +24,17 @@ export class SignupRequest {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @Matches(
-    /(?!.*\s).{5,30}$/,
-    {
-      message: ErrorCode.INVALID_PASSWORD_FORMAT,
-    },
-  )
+  @Matches(/(?!.*\s).{5,30}$/, {
+    message: ErrorCode.INVALID_PASSWORD_FORMAT,
+  })
   password: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  @Matches(
-    /(?!.*\s).{5,30}$/,
-    {
-      message: ErrorCode.INVALID_PASSWORD_FORMAT,
-    },
-  )
+  @Matches(/(?!.*\s).{5,30}$/, {
+    message: ErrorCode.INVALID_PASSWORD_FORMAT,
+  })
   confirmPassword: string;
 
   @ApiProperty()

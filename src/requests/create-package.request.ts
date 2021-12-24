@@ -1,7 +1,14 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsBoolean, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
-import { Level } from "src/constants/level.enum";
-import { QuestionStatus } from "src/constants/question-status.enum";
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { Level } from 'src/constants/level.enum';
+import { QuestionStatus } from 'src/constants/question-status.enum';
 
 export class CreatePackageRequest {
   @ApiProperty()

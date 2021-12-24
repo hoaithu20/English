@@ -51,7 +51,7 @@ export class User extends BaseEntity {
   @OneToMany(() => UserToken, (ut) => ut.user)
   userTokens: UserToken[];
 
-  @OneToMany(() => Question, (q) =>q.user)
+  @OneToMany(() => Question, (q) => q.user)
   questions: Question[];
 
   @OneToMany(() => Package, (p) => p.user)
@@ -60,9 +60,9 @@ export class User extends BaseEntity {
   @OneToMany(() => History, (h) => h.user)
   histories: History[];
 
-  @OneToOne(() => Profile, (p) =>p.user)
+  @OneToOne(() => Profile, (p) => p.user)
   profile: Profile;
 
-  @OneToOne(() => Point, (p) =>p.user)
+  @OneToOne(() => Point, (p) => p.user)
   points: Point[];
 }

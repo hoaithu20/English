@@ -11,20 +11,16 @@ import { QuestionsService } from 'src/services/questions.service';
 @ApiTags('/api/question')
 @Controller('/api/question')
 export class QuestionsController {
-  constructor(
-    private readonly questionService: QuestionsService,
-  ) { }
+  constructor(private readonly questionService: QuestionsService) {}
 
- @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBody({
-    type: PagingRequest
+    type: PagingRequest,
   })
   @Get('list-random-question')
   async getListQuestion(@Body() request: PagingRequest) {
     const [result, count] = await this.questionService.getListQuestion(request);
-    return PaginateResult.init(
-      result, count
-    )
+    return PaginateResult.init(result, count);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -32,7 +28,10 @@ export class QuestionsController {
     type: CreateQuestionRequest,
   })
   @Post('create-question')
-  async createQuestion(@CurrUser() user: User, @Body() request: CreateQuestionRequest) {
+  async createQuestion(
+    @CurrUser() user: User,
+    @Body() request: CreateQuestionRequest,
+  ) {
     return this.questionService.createQuestion(user.id, request);
   }
 }

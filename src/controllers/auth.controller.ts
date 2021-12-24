@@ -40,7 +40,10 @@ export class AuthController {
   }
 
   @Post('change-password')
-  async changePassword(@CurrUser() user: User, @Body() request: ChangePasswordRequest) {
+  async changePassword(
+    @CurrUser() user: User,
+    @Body() request: ChangePasswordRequest,
+  ) {
     return await this.authService.changePassword(7, request);
   }
 }

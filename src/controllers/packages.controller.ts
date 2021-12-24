@@ -16,15 +16,15 @@ import { PackagesService } from 'src/services/packages.service';
 @Controller('api/package')
 @UseGuards(JwtAuthGuard)
 export class PackagesController {
-  constructor( private readonly packageService: PackagesService) {}
+  constructor(private readonly packageService: PackagesService) {}
 
   @ApiBody({
-    type: PagingRequest
+    type: PagingRequest,
   })
   @Get('all-package')
   async getAllPackage(@Body() request: PagingRequest) {
     const [data, count] = await this.packageService.getAllPackage(request);
-    return PaginateResult.init(data, count)
+    return PaginateResult.init(data, count);
   }
 
   @ApiBody({
@@ -32,15 +32,18 @@ export class PackagesController {
   })
   @Get('get-detail-package')
   async getDetailPackage(@Body() request: GetDetailPackageRequest) {
-    const [data, count] = await this.packageService.getDetailPackage(request)
+    const [data, count] = await this.packageService.getDetailPackage(request);
     return PaginateResult.init(data, count);
   }
 
   @ApiBody({
-    type: CreatePackageRequest
+    type: CreatePackageRequest,
   })
   @Post('create-package')
-  async createPackage(@CurrUser() user: User, @Body() request: CreatePackageRequest) {
+  async createPackage(
+    @CurrUser() user: User,
+    @Body() request: CreatePackageRequest,
+  ) {
     return this.packageService.createPackage(user.id, request);
   }
 
@@ -49,23 +52,34 @@ export class PackagesController {
   })
   @Post('do-package')
   async doPackage(@CurrUser() user: User, @Body() request: DoPackageRequest) {
-    return await this.packageService.todoPackage(user.id, request)
+    return await this.packageService.todoPackage(user.id, request);
   }
 
   @Post('get-history')
   async getHistory(@CurrUser() user: User, @Body() request: PagingRequest) {
-    const [data, count] = await this.packageService.getHistory(user.id, request)
+    const [data, count] = await this.packageService.getHistory(
+      user.id,
+      request,
+    );
     return PaginateResult.init(data, count);
- }
+  }
 
- @Post('get-detail-history')
- async getDetail(@CurrUser()user: User, @Body() request: {packageId: number }) {
-   return await this.packageService.getDetailPackageHistory(user.id, request.packageId)
- }
+  @Post('get-detail-history')
+  async getDetail(
+    @CurrUser() user: User,
+    @Body() request: { packageId: number },
+  ) {
+    return await this.packageService.getDetailPackageHistory(
+      user.id,
+      request.packageId,
+    );
+  }
 
- @Post('leaderboard') 
- async getLeaderBoard(@CurrUser()user: User, @Body() request: GetLeaderBoardRequest){
-   return await this.packageService.getLeaderBoard(user.id, request) 
- }
-
+  @Post('leaderboard')
+  async getLeaderBoard(
+    @CurrUser() user: User,
+    @Body() request: GetLeaderBoardRequest,
+  ) {
+    return await this.packageService.getLeaderBoard(user.id, request);
+  }
 }

@@ -21,7 +21,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private mailService: MailService,
-  ) { }
+  ) {}
   async validate(username: string, password: string) {
     throw new Error('Method not implemented.');
   }
@@ -45,7 +45,7 @@ export class AuthService {
     if (request.password !== request.confirmPassword) {
       throw new BadRequestException({
         code: ErrorCode.PASSWORD_NOT_MATCH,
-      })
+      });
     }
     try {
       await this.connection.transaction(async (manager) => {
@@ -83,8 +83,8 @@ export class AuthService {
         code: ErrorCode.INCORRECT_PASSWORD,
       });
     }
-    const payload = { id: user.id }
-    const token = this.jwtService.sign(payload)
+    const payload = { id: user.id };
+    const token = this.jwtService.sign(payload);
     return { token: token };
   }
 
@@ -92,37 +92,37 @@ export class AuthService {
     const user = await this.userRepository.findOne({ email });
     if (!user) {
       throw new BadRequestException({
-        code: ErrorCode.USER_NOT_EXIST
-      })
+        code: ErrorCode.USER_NOT_EXIST,
+      });
     }
-    const otp = _.random(100000, 999999)
+    const otp = _.random(100000, 999999);
     const obj: OtpEmail = {
       to: email,
       otp: otp,
     };
     await this.mailService.sendMailForgotPassword(obj);
-    return otp
+    return otp;
   }
 
   async resetPassword(request: ResetPasswordRequest) {
     if (request.otp != request.newOtp) {
       throw new BadRequestException({
-        code: ErrorCode.INVALID_OTP
-      })
+        code: ErrorCode.INVALID_OTP,
+      });
     }
     if (request.newPassword !== request.confirmPassword) {
       throw new BadRequestException({
-        code: ErrorCode.PASSWORD_NOT_MATCH
-      })
+        code: ErrorCode.PASSWORD_NOT_MATCH,
+      });
     }
     const user = await this.userRepository.findOne({
       where: {
         email: request.email,
-      }
+      },
     });
     if (!user) {
       throw new BadRequestException({
-        code: ErrorCode.USER_NOT_EXIST
+        code: ErrorCode.USER_NOT_EXIST,
       });
     }
     user.password = await bcrypt.hash(
@@ -146,16 +146,15 @@ export class AuthService {
         code: ErrorCode.INCORRECT_PASSWORD,
       });
     }
-    if(request.newPassword !== request.confirmPassword) {
+    if (request.newPassword !== request.confirmPassword) {
       throw new BadRequestException({
-        code: ErrorCode.PASSWORD_NOT_MATCH
-      })
+        code: ErrorCode.PASSWORD_NOT_MATCH,
+      });
     }
     user.password = await bcrypt.hash(
       request.newPassword,
       this.configService.get('authConfig').saltOrRounds,
     );
     await this.connection.manager.save(user);
-
   }
 }

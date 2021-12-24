@@ -30,8 +30,8 @@ export class PackagesService {
     private readonly historyRepository: HistoryRepository,
     private readonly pointRepo: PointRepo,
     private readonly configService: ConfigService,
-    private readonly connection: Connection
-  ) { }
+    private readonly connection: Connection,
+  ) {}
 
   async getAllPackage(request: PagingRequest) {
     const page = request.pageIndex || 1;
@@ -39,10 +39,10 @@ export class PackagesService {
     const packages = this.packageRepository
       .createQueryBuilder()
       .select('id, name, level, total_question as total')
-      .where('status = :st', { st: QuestionStatus.ACTIVE})
+      .where('status = :st', { st: QuestionStatus.ACTIVE })
       .orderBy('id', 'DESC')
-      .offset((page-1)*pageSize)
-      .limit(pageSize)
+      .offset((page - 1) * pageSize)
+      .limit(pageSize);
     return await Promise.all([packages.getRawMany(), packages.getCount()]);
   }
 
@@ -56,28 +56,33 @@ export class PackagesService {
       .getOne();
     if (!packages) {
       throw new BadRequestException({
-        code: ErrorCode.NOT_FOUND_PACKAGE
-      })
+        code: ErrorCode.NOT_FOUND_PACKAGE,
+      });
     }
     const questions = await this.questionRepository
       .createQueryBuilder('q')
       .innerJoinAndSelect('q.answers', 'a')
       .where('q.id IN (:arr)', {
-        arr: packages.questionIds
+        arr: packages.questionIds,
       })
       .getMany();
     const questionMap = questions.map((item) => ({
       ...item,
-      answers: _.shuffle(item.answers.map((i) => ({
-        id: i.id,
-        content: i.content,
-        isTrue: i.isTrue
-      })))
+      answers: _.shuffle(
+        item.answers.map((i) => ({
+          id: i.id,
+          content: i.content,
+          isTrue: i.isTrue,
+        })),
+      ),
     }));
     const packageMap = {
       ...packages,
-      questions: (_.shuffle(questionMap)).slice((pageIndex - 1) * pageSize, pageIndex * pageSize),
-    }
+      questions: _.shuffle(questionMap).slice(
+        (pageIndex - 1) * pageSize,
+        pageIndex * pageSize,
+      ),
+    };
     return [packageMap, packages.totalQuestion];
   }
 
@@ -92,13 +97,13 @@ export class PackagesService {
         questionIds: request.question,
         name: request.name,
       });
-      await manager.save(newPackage)
-    })
+      await manager.save(newPackage);
+    });
   }
 
   async todoPackage(userId: number, request: DoPackageRequest) {
     let countTrue = 0;
-    let resultArr = [];
+    const resultArr = [];
     const currentWeek = await this.connection
       .createQueryBuilder(Week, 'w')
       .orderBy('w.id', 'DESC')
@@ -118,17 +123,23 @@ export class PackagesService {
       resultArr.push({
         ...question,
         check: question && question.correctAnswer === item.answerId,
-        answerId: item.answerId
-      })
+        answerId: item.answerId,
+      });
     }
-    const maxPoint = this.configService.get('questionConfig').maxPoint as number;
-    const point = new BigNumber(countTrue).times(maxPoint).div(request.questions.length).toFixed(2);
+    const maxPoint = this.configService.get('questionConfig')
+      .maxPoint as number;
+    const point = new BigNumber(countTrue)
+      .times(maxPoint)
+      .div(request.questions.length)
+      .toFixed(2);
     await this.connection.transaction(async (manager) => {
       await this.connection.manager
         .createQueryBuilder()
         .update(History)
         .set({ isCurrent: false })
-        .where('package_id = :packageId AND is_current = true', { packageId: request.packageId })
+        .where('package_id = :packageId AND is_current = true', {
+          packageId: request.packageId,
+        })
         .execute();
 
       const newHistory = this.historyRepository.create({
@@ -139,23 +150,23 @@ export class PackagesService {
       });
       const points = await this.pointRepo.findOne({
         where: {
-          week: currentWeek.id
-        }
+          week: currentWeek.id,
+        },
       });
       if (points) {
         const newPoint = this.pointRepo.create({
           user: userId as any,
           point: point,
-          week: currentWeek.id
-        })
-        await manager.save(newPoint)
+          week: currentWeek.id,
+        });
+        await manager.save(newPoint);
       } else {
         points.point = new BigNumber(points.point).plus(point).toFixed(2);
         await manager.save(points);
       }
 
       await manager.save(newHistory);
-    })
+    });
 
     return resultArr;
   }
@@ -169,11 +180,11 @@ export class PackagesService {
       .select([
         'h.package_id as packageId',
         'p.name as name',
-        'h.point as point'
+        'h.point as point',
       ])
       .leftJoin('h.package', 'p')
       .where('h.user_id = :userId AND h.is_current = true', { userId })
-      .orderBy('h.created_at', 'DESC')
+      .orderBy('h.created_at', 'DESC');
 
     const [data, count] = await Promise.all([
       query
@@ -181,7 +192,8 @@ export class PackagesService {
         .offset((page - 1) * pageSize)
         .limit(pageSize)
         .getRawMany(),
-      (await query.getRawMany()).length]);
+      (await query.getRawMany()).length,
+    ]);
 
     return [data, count];
   }
@@ -190,14 +202,19 @@ export class PackagesService {
     const histories = await this.historyRepository
       .createQueryBuilder('h')
       .leftJoinAndSelect('h.package', 'p')
-      .where('h.user_id = :userId AND h.package_id = :packageId', { userId, packageId })
+      .where('h.user_id = :userId AND h.package_id = :packageId', {
+        userId,
+        packageId,
+      })
       .orderBy('h.created_at', 'DESC')
       .getMany();
     const points = _.map(histories, 'point');
     const maxPoint = _.max(points);
-    const sumPoint = parseInt(_.reduce(points, function (sum, num) {
-      return sum + num;
-    }));
+    const sumPoint = parseInt(
+      _.reduce(points, function (sum, num) {
+        return sum + num;
+      }),
+    );
 
     return {
       totalDo: histories.length,
@@ -208,11 +225,11 @@ export class PackagesService {
         point: item.point,
         createAt: item.createdAt,
         namePackage: item.package.name,
-      }))
-    }
+      })),
+    };
   }
 
-  async getLeaderBoard(userId: number, request: GetLeaderBoardRequest, ) {
+  async getLeaderBoard(userId: number, request: GetLeaderBoardRequest) {
     // const page = request.pageIndex || 1;
     // const pageSize = request.pageSize || 10;
 
@@ -227,14 +244,13 @@ export class PackagesService {
       .getRawMany();
     return query.map((item) => ({
       ...item,
-      point: formatDecimal(item.point)
+      point: formatDecimal(item.point),
     }));
   }
 
   findQuestionById(questions, id) {
     return _.find(questions, {
-      id: id
-    })
+      id: id,
+    });
   }
-
 }

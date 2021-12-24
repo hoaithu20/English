@@ -13,15 +13,15 @@ import { PackagesService } from 'src/services/packages.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-    QuestionRepository,
-    AnswerRepository,
-    PackageRepository,
-    HistoryRepository,
-    PointRepo,
-    WeekRepository
-  ]),
-  ConfigModule
-],
+      QuestionRepository,
+      AnswerRepository,
+      PackageRepository,
+      HistoryRepository,
+      PointRepo,
+      WeekRepository,
+    ]),
+    ConfigModule,
+  ],
   providers: [PackagesService],
   controllers: [PackagesController],
 })

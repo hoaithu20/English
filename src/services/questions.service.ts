@@ -18,12 +18,10 @@ export class QuestionsService {
     private readonly questionRepository: QuestionRepository,
     private readonly answerRepository: AnswerRepository,
     private readonly packageRepository: PackageRepository,
-    private readonly connection: Connection
-  ) { }
+    private readonly connection: Connection,
+  ) {}
 
-  async getListPackageOfUser() {
-
-  }
+  // async getListPackageOfUser() {}
 
   async getListQuestion(request: PagingRequest) {
     const pageSize = request.pageSize || 1;
@@ -38,16 +36,15 @@ export class QuestionsService {
       .getManyAndCount();
     const questionMap = questions.map((item) => ({
       ...item,
-      answers: _.shuffle(item.answers)
+      answers: _.shuffle(item.answers),
     }));
 
-    return [questionMap, count]
-
+    return [questionMap, count];
   }
 
   async createQuestion(userId: number, request: CreateQuestionRequest) {
     const { title, level, status, isHidden, answers } = request;
-   try {
+    try {
       await this.connection.transaction(async (manager) => {
         const newQuestion = this.questionRepository.create({
           title,
@@ -67,7 +64,7 @@ export class QuestionsService {
             question: newQuestion,
           });
           await manager.save(newAnswer);
-          if (newAnswer.isTrue = true) {
+          if ((newAnswer.isTrue = true)) {
             correctAnswer = newAnswer.id;
           }
         }
@@ -81,7 +78,5 @@ export class QuestionsService {
     }
   }
 
-  async doQuestion() {
-    
-  }
+  // async doQuestion() {}
 }

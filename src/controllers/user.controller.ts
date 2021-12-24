@@ -27,7 +27,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly profileRepository: UserProfileRepository,
-  ) { }
+  ) {}
 
   @Get('/user')
   @UseInterceptors(ClassSerializerInterceptor)
@@ -37,22 +37,26 @@ export class UserController {
 
   @Get('profile')
   async getProfile(@CurrUser() user: User) {
-    return await this.userService.getProfile(user.id)
+    return await this.userService.getProfile(user.id);
   }
 
   @Post('update-profile')
   @UseInterceptors(FileInterceptor('avatar'))
-  async uploadFile(@CurrUser() user: User,@UploadedFile() file: Express.Multer.File, @Body() request: UpdateProfileRequest ) {
+  async uploadFile(
+    @CurrUser() user: User,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() request: UpdateProfileRequest,
+  ) {
     try {
       const profile = await this.profileRepository
-       .createQueryBuilder()
-       .where('user_id = :userId', {userId: user.id})
-       .getOne();
-      if(profile) {
-        profile.dateOfBirth = request.date,
-        profile.sex = Number(request.sex),
-        profile.avatar = file.filename,
-        profile.save();
+        .createQueryBuilder()
+        .where('user_id = :userId', { userId: user.id })
+        .getOne();
+      if (profile) {
+        (profile.dateOfBirth = request.date),
+          (profile.sex = Number(request.sex)),
+          (profile.avatar = file.filename),
+          profile.save();
       } else {
         const newProfile = this.profileRepository.create({
           user: user.id as any,
@@ -63,25 +67,24 @@ export class UserController {
         newProfile.save();
       }
       return profile;
-     
-    } catch(err) {
+    } catch (err) {
       throw new BadRequestException({
-        code: ErrorCode.UNSUCCESS
-      })
+        code: ErrorCode.UNSUCCESS,
+      });
     }
   }
 
   @Get('avatar')
   async getAvatar(@CurrUser() user: User, @Res() res) {
     const profile = await this.profileRepository
-    .createQueryBuilder()
-    .where('user_id = :userId', { userId: user.id})
-    .getOne();
+      .createQueryBuilder()
+      .where('user_id = :userId', { userId: user.id })
+      .getOne();
     if (!profile) {
       return;
     }
     return res.sendFile(profile.avatar, {
-      root: 'upload'
-    })
+      root: 'upload',
+    });
   }
 }

@@ -24,22 +24,22 @@ export class Package extends BaseEntity {
   @OneToMany(() => History, (h) => h.package)
   histories: History[];
 
-  @Column({default: QuestionStatus.ACTIVE})
+  @Column({ default: QuestionStatus.ACTIVE })
   status: QuestionStatus;
 
-  @Column({name: 'total_question'})
+  @Column({ name: 'total_question' })
   totalQuestion: number;
 
-  @Column({default: Level.EASY})
+  @Column({ default: Level.EASY })
   level: Level; // enum
 
-  @Column({default: false})
+  @Column({ default: false })
   isHidden: boolean;
 
   @Column({ name: 'time_out' })
   timeOut: number;
 
-  @Column({ default: 0})
+  @Column({ default: 0 })
   like: number;
 
   @Column({})
@@ -47,5 +47,4 @@ export class Package extends BaseEntity {
 
   @Column({ name: 'question_ids', type: 'json' })
   questionIds: number[];
-
 }

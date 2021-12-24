@@ -9,13 +9,13 @@ import { OtpEmail } from './mail-context.interface';
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  public async sendMailForgotPassword(data: OtpEmail){
+  public async sendMailForgotPassword(data: OtpEmail) {
     await this.mailerService.sendMail({
       to: data.to,
       subject: 'Quên mật khẩu ',
       template: './forgot-password-mail.html',
       context: {
-        otp: data.otp
+        otp: data.otp,
       },
     });
   }

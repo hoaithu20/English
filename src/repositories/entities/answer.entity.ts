@@ -20,7 +20,7 @@ export class Answer extends BaseEntity {
   @Column({ nullable: false })
   content: string;
 
-  @Column({name: 'is_true'})
+  @Column({ name: 'is_true' })
   isTrue: boolean;
 
   @ManyToOne(() => Question, (q) => q.answers)

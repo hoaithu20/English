@@ -22,10 +22,15 @@ export class Point extends BaseEntity {
   @RelationId((p: Point) => p.user)
   userId: number;
 
-  @Column({name: 'point', type: 'decimal', precision: 10, scale: 2, default: 0})
-  point: string
+  @Column({
+    name: 'point',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    default: 0,
+  })
+  point: string;
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   week: number;
-
 }
