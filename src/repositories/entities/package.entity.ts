@@ -24,7 +24,7 @@ export class Package extends BaseEntity {
   @OneToMany(() => History, (h) => h.package)
   histories: History[];
 
-  @Column({default: QuestionStatus.PRIVATE})
+  @Column({default: QuestionStatus.ACTIVE})
   status: QuestionStatus;
 
   @Column({name: 'total_question'})

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from 'src/repositories/user.repository';
-import { UpdateProfileRequest } from 'src/requests/update-profile.request';
 
 @Injectable()
 export class UserService {
@@ -23,9 +22,4 @@ export class UserService {
     return profile;
   }
 
-  async updateProfile(userId: number, request: UpdateProfileRequest) {
-    
-  }
-
-  
 }

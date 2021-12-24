@@ -5,7 +5,9 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Matches,
 } from 'class-validator';
+import { ErrorCode } from 'src/constants/errorcode.constant';
 import { Language } from 'src/constants/language.enum';
 
 export class SignupRequest {
@@ -22,11 +24,23 @@ export class SignupRequest {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @Matches(
+    /(?!.*\s).{5,30}$/,
+    {
+      message: ErrorCode.INVALID_PASSWORD_FORMAT,
+    },
+  )
   password: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @Matches(
+    /(?!.*\s).{5,30}$/,
+    {
+      message: ErrorCode.INVALID_PASSWORD_FORMAT,
+    },
+  )
   confirmPassword: string;
 
   @ApiProperty()

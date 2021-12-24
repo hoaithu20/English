@@ -12,6 +12,14 @@ import { HistoryRepository } from 'src/repositories/history.repository';
 import { PaginateResult } from 'src/responses/PaginateResult';
 import { PagingRequest } from 'src/requests/paging.request';
 import { ConfigService } from '@nestjs/config';
+import { Week } from 'src/repositories/entities/week.entity';
+import { Point } from 'src/repositories/entities/point.entity';
+import { PointRepo } from 'src/repositories/point.repoitory';
+import { BigNumber } from 'bignumber.js';
+import { GetLeaderBoardRequest } from 'src/requests/get-leaderboard.request';
+import { History } from 'src/repositories/entities/history.entity';
+import { QuestionStatus } from 'src/constants/question-status.enum';
+import { formatDecimal } from 'src/utils/convert';
 
 @Injectable()
 export class PackagesService {
@@ -20,9 +28,23 @@ export class PackagesService {
     private readonly answerRepository: AnswerRepository,
     private readonly packageRepository: PackageRepository,
     private readonly historyRepository: HistoryRepository,
+    private readonly pointRepo: PointRepo,
     private readonly configService: ConfigService,
     private readonly connection: Connection
   ) { }
+
+  async getAllPackage(request: PagingRequest) {
+    const page = request.pageIndex || 1;
+    const pageSize = request.pageSize || 10;
+    const packages = this.packageRepository
+      .createQueryBuilder()
+      .select('id, name, level, total_question as total')
+      .where('status = :st', { st: QuestionStatus.ACTIVE})
+      .orderBy('id', 'DESC')
+      .offset((page-1)*pageSize)
+      .limit(pageSize)
+    return await Promise.all([packages.getRawMany(), packages.getCount()]);
+  }
 
   async getDetailPackage(request: GetDetailPackageRequest) {
     const pageIndex = request.pageIndex || 1;
@@ -32,7 +54,7 @@ export class PackagesService {
       .createQueryBuilder()
       .where('id = :id', { id: request.packageId })
       .getOne();
-    if(!packages) {
+    if (!packages) {
       throw new BadRequestException({
         code: ErrorCode.NOT_FOUND_PACKAGE
       })
@@ -40,30 +62,35 @@ export class PackagesService {
     const questions = await this.questionRepository
       .createQueryBuilder('q')
       .innerJoinAndSelect('q.answers', 'a')
-      .where('id IN (:arr)', {
+      .where('q.id IN (:arr)', {
         arr: packages.questionIds
       })
       .getMany();
     const questionMap = questions.map((item) => ({
       ...item,
-      answers: _.shuffle(item.answers)
+      answers: _.shuffle(item.answers.map((i) => ({
+        id: i.id,
+        content: i.content,
+        isTrue: i.isTrue
+      })))
     }));
     const packageMap = {
       ...packages,
       questions: (_.shuffle(questionMap)).slice((pageIndex - 1) * pageSize, pageIndex * pageSize),
     }
-    return [ packageMap, packages.totalQuestion];
+    return [packageMap, packages.totalQuestion];
   }
 
   async createPackage(userId: number, request: CreatePackageRequest) {
     await this.connection.transaction(async (manager) => {
       const newPackage = await this.packageRepository.create({
         user: userId as any,
-        totalQuestion: request.total,
+        totalQuestion: request.question.length,
         timeOut: request.time,
         level: request.level,
         isHidden: request.isHidden,
-        questionIds: request.question
+        questionIds: request.question,
+        name: request.name,
       });
       await manager.save(newPackage)
     })
@@ -72,17 +99,21 @@ export class PackagesService {
   async todoPackage(userId: number, request: DoPackageRequest) {
     let countTrue = 0;
     let resultArr = [];
+    const currentWeek = await this.connection
+      .createQueryBuilder(Week, 'w')
+      .orderBy('w.id', 'DESC')
+      .getOne();
     const questionIds = _.map(request.questions, 'questionId');
     const questions = await this.questionRepository
       .createQueryBuilder('q')
       .leftJoinAndSelect('q.answers', 'a')
-      .where('q.id IN(:arr)', { arr: questionIds})
+      .where('q.id IN(:arr)', { arr: questionIds })
       .getMany();
 
     for (const item of request.questions) {
       const question = this.findQuestionById(questions, item.questionId);
-      if(question && question.correctAnswer == item.answerId) {
-        countTrue ++;
+      if (question && question.correctAnswer == item.answerId) {
+        countTrue++;
       }
       resultArr.push({
         ...question,
@@ -91,14 +122,41 @@ export class PackagesService {
       })
     }
     const maxPoint = this.configService.get('questionConfig').maxPoint as number;
-    const point = (countTrue*maxPoint/request.questions.length).toFixed(2);
-    const newHistory = this.historyRepository.create({
-      user: userId as any,
-      packageId: request.packageId,
-      time: request.time,
-      point,
+    const point = new BigNumber(countTrue).times(maxPoint).div(request.questions.length).toFixed(2);
+    await this.connection.transaction(async (manager) => {
+      await this.connection.manager
+        .createQueryBuilder()
+        .update(History)
+        .set({ isCurrent: false })
+        .where('package_id = :packageId AND is_current = true', { packageId: request.packageId })
+        .execute();
+
+      const newHistory = this.historyRepository.create({
+        user: userId as any,
+        packageId: request.packageId,
+        time: request.time,
+        point,
+      });
+      const points = await this.pointRepo.findOne({
+        where: {
+          week: currentWeek.id
+        }
+      });
+      if (points) {
+        const newPoint = this.pointRepo.create({
+          user: userId as any,
+          point: point,
+          week: currentWeek.id
+        })
+        await manager.save(newPoint)
+      } else {
+        points.point = new BigNumber(points.point).plus(point).toFixed(2);
+        await manager.save(points);
+      }
+
+      await manager.save(newHistory);
     })
-    await newHistory.save();
+
     return resultArr;
   }
 
@@ -107,51 +165,71 @@ export class PackagesService {
     const pageSize = request.pageSize || 10;
 
     const query = this.historyRepository
-     .createQueryBuilder('h')
-     .select([
-       'DISTINCT h.package_id as packageId',
-       'p.name as name',
+      .createQueryBuilder('h')
+      .select([
+        'h.package_id as packageId',
+        'p.name as name',
+        'h.point as point'
       ])
-     .leftJoin('h.package', 'p')
-     .where('h.user_id = :userId', { userId })
-     
+      .leftJoin('h.package', 'p')
+      .where('h.user_id = :userId AND h.is_current = true', { userId })
+      .orderBy('h.created_at', 'DESC')
+
     const [data, count] = await Promise.all([
       query
-      .clone()
-      .offset((page - 1)*pageSize)
-      .limit(pageSize)
-      .getRawMany(), 
+        .clone()
+        .offset((page - 1) * pageSize)
+        .limit(pageSize)
+        .getRawMany(),
       (await query.getRawMany()).length]);
 
     return [data, count];
- }
-
- async getDetailPackageHistory(userId: number, packageId: number) {
-   const histories = await this.historyRepository
-    .createQueryBuilder('h')
-    .leftJoinAndSelect('h.package', 'p')
-    .where('h.user_id = :userId AND h.package_id = :packageId', { userId, packageId })
-    .orderBy('h.created_at', 'DESC')
-    .getMany();
-  console.log(histories)
-  const points = _.map(histories, 'point');
-  const maxPoint = _.max(points);
-  const sumPoint = parseInt(_.reduce(points, function(sum, num) {
-    return sum + num;
-  }));
-
-  return {
-    totalDo: histories.length,
-    maxPoint,
-    averagePoint: sumPoint/histories.length,
-    items: histories.map((item) => ({
-      time: item.time,
-      point: item.point,
-      createAt: item.createdAt,
-      namePackage: item.package.name,
-    }))
   }
- }
+
+  async getDetailPackageHistory(userId: number, packageId: number) {
+    const histories = await this.historyRepository
+      .createQueryBuilder('h')
+      .leftJoinAndSelect('h.package', 'p')
+      .where('h.user_id = :userId AND h.package_id = :packageId', { userId, packageId })
+      .orderBy('h.created_at', 'DESC')
+      .getMany();
+    const points = _.map(histories, 'point');
+    const maxPoint = _.max(points);
+    const sumPoint = parseInt(_.reduce(points, function (sum, num) {
+      return sum + num;
+    }));
+
+    return {
+      totalDo: histories.length,
+      maxPoint,
+      averagePoint: sumPoint / histories.length,
+      items: histories.map((item) => ({
+        time: item.time,
+        point: item.point,
+        createAt: item.createdAt,
+        namePackage: item.package.name,
+      }))
+    }
+  }
+
+  async getLeaderBoard(userId: number, request: GetLeaderBoardRequest, ) {
+    // const page = request.pageIndex || 1;
+    // const pageSize = request.pageSize || 10;
+
+    const query = await this.pointRepo
+      .createQueryBuilder('p')
+      .select(['p.point as point', 'u.username as username', 'u.id as userId'])
+      .leftJoin('p.user', 'u')
+      .where('p.week = :week AND p.point > 0', { week: request.week })
+      .orderBy('p.point', 'DESC')
+      .offset(0)
+      .limit(10)
+      .getRawMany();
+    return query.map((item) => ({
+      ...item,
+      point: formatDecimal(item.point)
+    }));
+  }
 
   findQuestionById(questions, id) {
     return _.find(questions, {

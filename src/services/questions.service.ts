@@ -34,7 +34,7 @@ export class QuestionsService {
       .skip((pageIndex - 1) * pageSize)
       .take(pageSize)
       .innerJoinAndSelect('q.answers', 'a')
-      .where('q.status = :status', { status: QuestionStatus.PUBLIC })
+      .where('q.status = :status', { status: QuestionStatus.ACTIVE })
       .getManyAndCount();
     const questionMap = questions.map((item) => ({
       ...item,
@@ -47,7 +47,7 @@ export class QuestionsService {
 
   async createQuestion(userId: number, request: CreateQuestionRequest) {
     const { title, level, status, isHidden, answers } = request;
-   //try {
+   try {
       await this.connection.transaction(async (manager) => {
         const newQuestion = this.questionRepository.create({
           title,
@@ -74,10 +74,14 @@ export class QuestionsService {
         newQuestion.correctAnswer = correctAnswer;
         await manager.save(newQuestion);
       });
-    // } catch (err) {
-    //   throw new BadRequestException({
-    //     code: ErrorCode.UNSUCCESS,
-    //   });
-    // }
+    } catch (err) {
+      throw new BadRequestException({
+        code: ErrorCode.UNSUCCESS,
+      });
+    }
+  }
+
+  async doQuestion() {
+    
   }
 }

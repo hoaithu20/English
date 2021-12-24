@@ -13,11 +13,11 @@ import { MailService } from './mail.service';
         secure: true,
         auth: {
           user: "yoonabar@gmail.com",
-          pass: "hoaithuyoona"
+          pass: "shynobita"
         }
       },
       defaults: {
-        from: '"No Reply" <noreply@example.com>',
+        from: '"Vatta Toeic" <noreply@example.com>',
       },
       template: {
         dir: path.resolve(process.cwd(), 'src/mail/template'),

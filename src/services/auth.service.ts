@@ -7,7 +7,11 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { MailService } from 'src/mail/mail.service';
-import { ChangePasswordRequest } from 'src/requests/change-password.requesr';
+import { ResetPasswordRequest } from 'src/requests/reset-password.request';
+import _ from 'lodash';
+import { User } from 'src/repositories/entities/user.entity';
+import { ChangePasswordRequest } from 'src/requests/change-password.request';
+import { OtpEmail } from 'src/mail/mail-context.interface';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +21,7 @@ export class AuthService {
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private mailService: MailService,
-  ) {}
+  ) { }
   async validate(username: string, password: string) {
     throw new Error('Method not implemented.');
   }
@@ -49,7 +53,7 @@ export class AuthService {
           request.password,
           this.configService.get('authConfig').saltOrRounds,
         );
-        const newUser = await this.userRepository.create({
+        const newUser = this.userRepository.create({
           email: request.email,
           username: request.username,
           password: hash,
@@ -79,31 +83,79 @@ export class AuthService {
         code: ErrorCode.INCORRECT_PASSWORD,
       });
     }
-    const payload = {id: user.id}
+    const payload = { id: user.id }
     const token = this.jwtService.sign(payload)
     return { token: token };
   }
 
   async forgotPassword(email: string) {
-    const user = await this.userRepository.findOne({email});
-    if(!user) {
+    const user = await this.userRepository.findOne({ email });
+    if (!user) {
       throw new BadRequestException({
         code: ErrorCode.USER_NOT_EXIST
       })
     }
-    const obj = {
+    const otp = _.random(100000, 999999)
+    const obj: OtpEmail = {
       to: email,
-      otp: '123456',
+      otp: otp,
     };
     await this.mailService.sendMailForgotPassword(obj);
+    return otp
   }
 
-  async resetPassword(request: ChangePasswordRequest) {
+  async resetPassword(request: ResetPasswordRequest) {
+    if (request.otp != request.newOtp) {
+      throw new BadRequestException({
+        code: ErrorCode.INVALID_OTP
+      })
+    }
     if (request.newPassword !== request.confirmPassword) {
       throw new BadRequestException({
         code: ErrorCode.PASSWORD_NOT_MATCH
       })
     }
-    
+    const user = await this.userRepository.findOne({
+      where: {
+        email: request.email,
+      }
+    });
+    if (!user) {
+      throw new BadRequestException({
+        code: ErrorCode.USER_NOT_EXIST
+      });
+    }
+    user.password = await bcrypt.hash(
+      request.newPassword,
+      this.configService.get('authConfig').saltOrRounds,
+    );
+    await this.connection.manager.save(user);
+  }
+
+  async changePassword(userId: number, request: ChangePasswordRequest) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new BadRequestException({
+        code: ErrorCode.USER_NOT_EXIST,
+      });
+    }
+    if (!bcrypt.compareSync(request.password, user.password)) {
+      throw new BadRequestException({
+        code: ErrorCode.INCORRECT_PASSWORD,
+      });
+    }
+    if(request.newPassword !== request.confirmPassword) {
+      throw new BadRequestException({
+        code: ErrorCode.PASSWORD_NOT_MATCH
+      })
+    }
+    user.password = await bcrypt.hash(
+      request.newPassword,
+      this.configService.get('authConfig').saltOrRounds,
+    );
+    await this.connection.manager.save(user);
+
   }
 }

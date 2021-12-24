@@ -37,7 +37,8 @@ export class History extends BaseEntity {
   @Column({name: 'point', type: 'decimal', precision: 5, scale: 2})
   point: string
 
-  @Column({})
+  @Column({name: 'is_current', default: true})
+  isCurrent: boolean;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

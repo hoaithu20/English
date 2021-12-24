@@ -1,6 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { CurrUser } from 'src/decoraters/user.decorator';
+import { User } from 'src/repositories/entities/user.entity';
+import { ChangePasswordRequest } from 'src/requests/change-password.request';
 import { LoginRequest } from 'src/requests/login.request';
+import { ResetPasswordRequest } from 'src/requests/reset-password.request';
 import { SignupRequest } from 'src/requests/signup.request';
 import { AuthService } from 'src/services/auth.service';
 
@@ -25,8 +29,18 @@ export class AuthController {
     return await this.authService.login(request.username, request.password);
   }
 
-  // @Post('forgot-password')
-  // async forgotPassword() {
-  //   return await this.authService.forgotPassword(1);
-  // }
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string) {
+    return await this.authService.forgotPassword(email);
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() request: ResetPasswordRequest) {
+    return await this.authService.resetPassword(request);
+  }
+
+  @Post('change-password')
+  async changePassword(@CurrUser() user: User, @Body() request: ChangePasswordRequest) {
+    return await this.authService.changePassword(7, request);
+  }
 }

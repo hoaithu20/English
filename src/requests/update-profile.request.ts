@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsDate, IsEnum, IsOptional, IsString } from "class-validator";
+import { IsDate, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
 import { Sex } from "src/constants/sex.enum";
 
 export class UpdateProfileRequest {
@@ -12,6 +12,6 @@ export class UpdateProfileRequest {
 
   @ApiProperty()
   @IsOptional()
-  @IsEnum(Sex)
-  sex: Sex;
+  @IsString()
+  sex: string;
 }

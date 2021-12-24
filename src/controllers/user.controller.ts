@@ -40,7 +40,7 @@ export class UserController {
     return await this.userService.getProfile(user.id)
   }
 
-  @Post('upload')
+  @Post('update-profile')
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadFile(@CurrUser() user: User,@UploadedFile() file: Express.Multer.File, @Body() request: UpdateProfileRequest ) {
     try {
@@ -50,25 +50,25 @@ export class UserController {
        .getOne();
       if(profile) {
         profile.dateOfBirth = request.date,
-        profile.sex = request.sex,
+        profile.sex = Number(request.sex),
+        profile.avatar = file.filename,
         profile.save();
       } else {
         const newProfile = this.profileRepository.create({
           user: user.id as any,
           dateOfBirth: request.date,
-          sex: request.sex,
+          sex: Number(request.sex),
           avatar: file.filename,
         });
         newProfile.save();
       }
+      return profile;
      
     } catch(err) {
       throw new BadRequestException({
         code: ErrorCode.UNSUCCESS
       })
     }
-    console.log(file);
-    return file.filename
   }
 
   @Get('avatar')
@@ -84,5 +84,4 @@ export class UserController {
       root: 'upload'
     })
   }
-
 }

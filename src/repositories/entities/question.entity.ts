@@ -22,7 +22,7 @@ export class Question extends BaseEntity {
   @Column()
   title: string;
 
-  @Column({default: QuestionStatus.PUBLIC})
+  @Column({default: QuestionStatus.ACTIVE})
   status: QuestionStatus; // add enum;
 
   @Column({default: Level.EASY})
