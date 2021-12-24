@@ -1,6 +1,6 @@
 export enum ErrorCode {
   GENERAL_ERROR = '99',
-  BAD_REQUEST= '400',
+  BAD_REQUEST = '400',
   SUCCESS = '00',
   UNSUCCESS = '01',
   PAGE_INDEX_NOT_INTEGER = '02',
@@ -14,4 +14,6 @@ export enum ErrorCode {
   INCORRECT_PASSWORD = '10',
   NOT_FOUND_PACKAGE = '11',
   PASSWORD_NOT_MATCH = '12',
+  INVALID_OTP = '13',
+  INVALID_PASSWORD_FORMAT = '14',
 }

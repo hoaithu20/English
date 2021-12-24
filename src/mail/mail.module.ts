@@ -8,16 +8,16 @@ import { MailService } from './mail.service';
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: "smtp.gmail.com",
+        host: 'smtp.gmail.com',
         port: 465,
         secure: true,
         auth: {
-          user: "yoonabar@gmail.com",
-          pass: "hoaithuyoona"
-        }
+          user: 'yoonabar@gmail.com',
+          pass: 'shynobita',
+        },
       },
       defaults: {
-        from: '"No Reply" <noreply@example.com>',
+        from: '"Vatta Toeic" <noreply@example.com>',
       },
       template: {
         dir: path.resolve(process.cwd(), 'src/mail/template'),
@@ -31,4 +31,4 @@ import { MailService } from './mail.service';
   providers: [MailService],
   exports: [MailService], // 👈 export for DI
 })
-export class MailModule { }
+export class MailModule {}

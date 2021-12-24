@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber } from 'class-validator';
 import { PagingRequest } from './paging.request';
 
-export class GetDetailPackageRequest extends PagingRequest {
+export class GetLeaderBoardRequest extends PagingRequest {
   @ApiProperty()
   @IsNumber()
-  packageId: number;
+  week: number;
 }

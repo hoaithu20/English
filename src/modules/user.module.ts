@@ -10,15 +10,12 @@ import { UserProfileRepository } from 'src/repositories/user-profile.repository'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      UserRepository,
-      UserProfileRepository,
-    ]),
+    TypeOrmModule.forFeature([UserRepository, UserProfileRepository]),
     MulterModule.registerAsync({
       useFactory: () => ({
         storage: diskStorage({
           filename: Helper.customFileName,
-          destination: './upload'
+          destination: './upload',
         }),
       }),
     }),

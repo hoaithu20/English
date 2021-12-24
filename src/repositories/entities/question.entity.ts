@@ -22,19 +22,19 @@ export class Question extends BaseEntity {
   @Column()
   title: string;
 
-  @Column({default: QuestionStatus.PUBLIC})
+  @Column({ default: QuestionStatus.ACTIVE })
   status: QuestionStatus; // add enum;
 
-  @Column({default: Level.EASY})
+  @Column({ default: Level.EASY })
   level: Level;
 
-  @Column({default: false})
+  @Column({ default: false })
   isHidden: boolean;
 
-  @Column({default: 0})
+  @Column({ default: 0 })
   like: number;
 
-  @Column({name: 'total_answer'})
+  @Column({ name: 'total_answer' })
   totalAnswer: number;
 
   @ManyToOne(() => User, (u) => u.questions)
@@ -44,7 +44,7 @@ export class Question extends BaseEntity {
   @OneToMany(() => Answer, (a) => a.question)
   answers: Answer[];
 
-  @Column({ name: 'correct_answer', default: 0})
+  @Column({ name: 'correct_answer', default: 0 })
   correctAnswer: number;
 
   @CreateDateColumn({ name: 'created_at' })

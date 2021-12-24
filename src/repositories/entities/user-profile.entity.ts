@@ -16,7 +16,7 @@ export class Profile extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   avatar: string;
 
   @OneToOne(() => User)
@@ -32,7 +32,7 @@ export class Profile extends BaseEntity {
   // @Column({nullable: true})
   // country: string;
 
-  @Column({nullable: true})
+  @Column({ nullable: true })
   sex: Sex;
 
   @CreateDateColumn({ name: 'created_at' })

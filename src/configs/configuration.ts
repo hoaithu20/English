@@ -20,10 +20,11 @@ export default () => ({
   authConfig: {
     secretKey: process.env.SECRET_KEY,
     saltOrRounds: parseInt(process.env.SALT_OR_ROUNDS),
+    expriedToken: process.env.EXPRIED_TOKEN,
   },
   questionConfig: {
-    maxPoint: parseInt(process.env.MAX_POINT)
-  }
+    maxPoint: parseInt(process.env.MAX_POINT),
+  },
   // authOptions: {
   //   google: {
   //     clientId: process.env.GOOGLE_CLIENT_ID,

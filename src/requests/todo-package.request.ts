@@ -1,5 +1,5 @@
-import { ApiProperty, ApiTags } from "@nestjs/swagger";
-import { IsArray, IsBoolean, IsNumber } from "class-validator";
+import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { IsArray, IsBoolean, IsNumber } from 'class-validator';
 
 class Questions {
   @ApiProperty()
@@ -23,5 +23,4 @@ export class DoPackageRequest {
   @ApiProperty()
   @IsArray()
   questions: Questions[];
-
 }

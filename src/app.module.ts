@@ -26,7 +26,7 @@ import { QuestionsModule } from './modules/questions.module';
     }),
     AuthModule,
     UserModule,
-    QuestionsModule
+    QuestionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

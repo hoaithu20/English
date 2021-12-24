@@ -13,6 +13,7 @@ import {
 import { UserStatus } from '../../constants/user-status.enum';
 import { History } from './history.entity';
 import { Package } from './package.entity';
+import { Point } from './point.entity';
 import { Question } from './question.entity';
 import { Profile } from './user-profile.entity';
 import { UserToken } from './user-token.entity';
@@ -50,7 +51,7 @@ export class User extends BaseEntity {
   @OneToMany(() => UserToken, (ut) => ut.user)
   userTokens: UserToken[];
 
-  @OneToMany(() => Question, (q) =>q.user)
+  @OneToMany(() => Question, (q) => q.user)
   questions: Question[];
 
   @OneToMany(() => Package, (p) => p.user)
@@ -58,4 +59,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => History, (h) => h.user)
   histories: History[];
+
+  @OneToOne(() => Profile, (p) => p.user)
+  profile: Profile;
+
+  @OneToOne(() => Point, (p) => p.user)
+  points: Point[];
 }

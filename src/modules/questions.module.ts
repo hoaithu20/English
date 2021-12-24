@@ -11,17 +11,18 @@ import { LocalStrategy } from 'src/security/local.strategy';
 import { QuestionsService } from 'src/services/questions.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([
-    QuestionRepository,
-    AnswerRepository,
-    PackageRepository,
-  ]),
-  // JwtModule.register({
-  //   secret: 'yoona',
-  //   signOptions: { expiresIn: '60s' },
-  // }),
-  // PassportModule
-],
+  imports: [
+    TypeOrmModule.forFeature([
+      QuestionRepository,
+      AnswerRepository,
+      PackageRepository,
+    ]),
+    // JwtModule.register({
+    //   secret: 'yoona',
+    //   signOptions: { expiresIn: '60s' },
+    // }),
+    // PassportModule
+  ],
   providers: [QuestionsService],
   controllers: [QuestionsController],
 })
