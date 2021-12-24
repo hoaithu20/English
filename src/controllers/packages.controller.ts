@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { request } from 'express';
 import { CurrUser } from 'src/decoraters/user.decorator';
 import { User } from 'src/repositories/entities/user.entity';
@@ -11,7 +11,8 @@ import { PaginateResult } from 'src/responses/PaginateResult';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard';
 import { PackagesService } from 'src/services/packages.service';
 
-@Controller('packages')
+@ApiTags('/api/packages')
+@Controller('api/packages')
 export class PackagesController {
   constructor( private readonly packageService: PackagesService) {}
 
