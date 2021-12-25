@@ -62,6 +62,7 @@ export class QuestionsService {
             content: answer.content,
             isTrue: answer.isCorrect,
             question: newQuestion,
+            description: answer.explain,
           });
           await manager.save(newAnswer);
           if ((newAnswer.isTrue = true)) {

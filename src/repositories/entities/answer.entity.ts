@@ -20,6 +20,9 @@ export class Answer extends BaseEntity {
   @Column({ nullable: false })
   content: string;
 
+  @Column( {default: null, nullable: true})
+  description: string;
+
   @Column({ name: 'is_true' })
   isTrue: boolean;
 
