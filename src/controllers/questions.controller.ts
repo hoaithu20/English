@@ -4,17 +4,18 @@ import { CurrUser } from 'src/decoraters/user.decorator';
 import { User } from 'src/repositories/entities/user.entity';
 import { CreateQuestionRequest } from 'src/requests/create-question.request';
 import { PagingRequest } from 'src/requests/paging.request';
+import { GetQuestionRequest } from 'src/requests/question.request';
 import { PaginateResult } from 'src/responses/PaginateResult';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard';
 import { QuestionsService } from 'src/services/questions.service';
 
 @ApiTags('/api/question')
 @Controller('/api/question')
-@ApiBearerAuth()
+// @UseGuards(JwtAuthGuard)
+// @ApiBearerAuth()
 export class QuestionsController {
   constructor(private readonly questionService: QuestionsService) {}
 
-  @UseGuards(JwtAuthGuard)
   @ApiBody({
     type: PagingRequest,
   })
@@ -24,7 +25,7 @@ export class QuestionsController {
     return PaginateResult.init(result, count);
   }
 
-  @UseGuards(JwtAuthGuard)
+
   @ApiBody({
     type: CreateQuestionRequest,
   })
@@ -34,5 +35,14 @@ export class QuestionsController {
     @Body() request: CreateQuestionRequest,
   ) {
     return this.questionService.createQuestion(user.id, request);
+  }
+
+  @ApiBody({
+    type: GetQuestionRequest,
+  })
+  @Post('list-question')
+  async listQuestion(@CurrUser()user: User,@Body() request: GetQuestionRequest) {
+    const [data, count] = await this.questionService.getQuestion(7, request);
+    return PaginateResult.init(data, count)
   }
 }

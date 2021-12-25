@@ -40,6 +40,9 @@ export class History extends BaseEntity {
   @Column({ name: 'is_current', default: true })
   isCurrent: boolean;
 
+  @Column({nullable: true, default: null})
+  questions: string[]
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }

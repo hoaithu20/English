@@ -14,6 +14,7 @@ import { GetDetailPackageRequest } from 'src/requests/get-detail-package.request
 import { UserRole } from 'src/constants/user-role.enum';
 import { GetQuestionRequest } from 'src/requests/question.request';
 import { GetQuestionType } from 'src/constants/get-question-type.enum';
+import { DoQuestionRequest } from 'src/requests/do-question.request';
 
 @Injectable()
 export class QuestionsService {
@@ -27,8 +28,8 @@ export class QuestionsService {
   // async getListPackageOfUser() {}
 
   async getListQuestion(request: PagingRequest) {
-    const pageSize = request.pageSize || 1;
-    const pageIndex = request.pageIndex || 10;
+    const pageSize = request.pageSize || 10;
+    const pageIndex = request.pageIndex || 1;
 
     const [questions, count] = await this.questionRepository
       .createQueryBuilder('q')
@@ -88,13 +89,24 @@ export class QuestionsService {
     }
   }
 
+  async doQuestion(userId: number, request: DoQuestionRequest) {
+    
+  }
+
+  ["{"id": "1", "check": "0"}"]
+
+
+
+
   async getQuestion(userId: number, request: GetQuestionRequest) {
-    const pageSize = request.pageSize || 1;
-    const pageIndex = request.pageIndex || 10;
+    const pageSize = request.pageSize || 10;
+    const pageIndex = request.pageIndex || 1;
+
+    const history 
 
     const query = this.questionRepository
-      .createQueryBuilder('p')
-      .leftJoinAndSelect('p.answers', 'a')
+      .createQueryBuilder('q')
+      .leftJoinAndSelect('q.answers', 'a')
       .orderBy('q.created_at', 'DESC')
       .offset((pageIndex-1)*pageSize)
       .limit(pageSize)
@@ -114,7 +126,6 @@ export class QuestionsService {
     }
     
     const [data, count] = await Promise.all([query.getMany(), query.getCount()]);
-
-      
+    return [data, count];   
   }
 }
