@@ -46,7 +46,7 @@ export class QuestionsService {
   }
 
   async createQuestion(userId: number, request: CreateQuestionRequest) {
-    const { title, level, isHidden, answers } = request;
+    const { title, level, answers } = request;
     const admin = await this.connection.manager
       .createQueryBuilder(User, 'u')
       .select('u.id as id')
@@ -115,7 +115,7 @@ export class QuestionsService {
     }
     
     const [data, count] = await Promise.all([query.getMany(), query.getCount()]);
-    
+
       
   }
 }
