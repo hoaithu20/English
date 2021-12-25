@@ -18,7 +18,7 @@ export class QuestionsController {
   @ApiBody({
     type: PagingRequest,
   })
-  @Get('list-random-question')
+  @Post('list-random-question')
   async getListQuestion(@Body() request: PagingRequest) {
     const [result, count] = await this.questionService.getListQuestion(request);
     return PaginateResult.init(result, count);

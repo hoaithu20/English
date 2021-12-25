@@ -22,7 +22,7 @@ export class PackagesController {
   @ApiBody({
     type: PagingRequest,
   })
-  @Get('all-package')
+  @Post('all-package')
   async getAllPackage(@Body() request: PagingRequest) {
     const [data, count] = await this.packageService.getAllPackage(request);
     return PaginateResult.init(data, count);
@@ -31,7 +31,7 @@ export class PackagesController {
   @ApiBody({
     type: GetDetailPackageRequest,
   })
-  @Get('get-detail-package')
+  @Post('get-detail-package')
   async getDetailPackage(@Body() request: GetDetailPackageRequest) {
     const [data, count] = await this.packageService.getDetailPackage(request);
     return PaginateResult.init(data, count);
