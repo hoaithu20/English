@@ -93,7 +93,6 @@ export class QuestionsService {
     
   }
 
-  ["{"id": "1", "check": "0"}"]
 
 
 
@@ -101,8 +100,6 @@ export class QuestionsService {
   async getQuestion(userId: number, request: GetQuestionRequest) {
     const pageSize = request.pageSize || 10;
     const pageIndex = request.pageIndex || 1;
-
-    const history 
 
     const query = this.questionRepository
       .createQueryBuilder('q')

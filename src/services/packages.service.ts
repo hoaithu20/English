@@ -104,10 +104,11 @@ export class PackagesService {
   async todoPackage(userId: number, request: DoPackageRequest) {
     let countTrue = 0;
     const resultArr = [];
-    const currentWeek = await this.connection
+    const currentWeek = await this.connection.manager
       .createQueryBuilder(Week, 'w')
       .orderBy('w.id', 'DESC')
       .getOne();
+    console.log(currentWeek);
     const questionIds = _.map(request.questions, 'questionId');
     const questions = await this.questionRepository
       .createQueryBuilder('q')
@@ -153,7 +154,7 @@ export class PackagesService {
           week: currentWeek.id,
         },
       });
-      if (points) {
+      if (!points) {
         const newPoint = this.pointRepo.create({
           user: userId as any,
           point: point,

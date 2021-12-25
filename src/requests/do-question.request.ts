@@ -4,5 +4,5 @@ import { IsArray } from "class-validator";
 export class DoQuestionRequest {
     @ApiProperty()
     @IsArray()
-    question: string[];
+    question: number[];
 }
