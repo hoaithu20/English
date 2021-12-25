@@ -1,11 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { CurrUser } from 'src/decoraters/user.decorator';
 import { User } from 'src/repositories/entities/user.entity';
 import { ChangePasswordRequest } from 'src/requests/change-password.request';
 import { LoginRequest } from 'src/requests/login.request';
 import { ResetPasswordRequest } from 'src/requests/reset-password.request';
 import { SignupRequest } from 'src/requests/signup.request';
+import { JwtAuthGuard } from 'src/security/jwt-auth.guard';
 import { AuthService } from 'src/services/auth.service';
 
 @ApiTags('/api/auth')
@@ -39,6 +40,8 @@ export class AuthController {
     return await this.authService.resetPassword(request);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Post('change-password')
   async changePassword(
     @CurrUser() user: User,

@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { CurrUser } from 'src/decoraters/user.decorator';
 import { User } from 'src/repositories/entities/user.entity';
 import { CreateQuestionRequest } from 'src/requests/create-question.request';
@@ -10,6 +10,7 @@ import { QuestionsService } from 'src/services/questions.service';
 
 @ApiTags('/api/question')
 @Controller('/api/question')
+@ApiBearerAuth()
 export class QuestionsController {
   constructor(private readonly questionService: QuestionsService) {}
 

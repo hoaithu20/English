@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { request } from 'express';
 import { CurrUser } from 'src/decoraters/user.decorator';
 import { User } from 'src/repositories/entities/user.entity';
@@ -15,6 +15,7 @@ import { PackagesService } from 'src/services/packages.service';
 @ApiTags('/api/package')
 @Controller('api/package')
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class PackagesController {
   constructor(private readonly packageService: PackagesService) {}
 

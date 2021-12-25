@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard';
 import { UserService } from 'src/services/user.service';
 import { CurrUser } from 'src/decoraters/user.decorator';
@@ -23,6 +23,7 @@ import { UpdateProfileRequest } from 'src/requests/update-profile.request';
 @ApiTags('/api/user')
 @Controller('/api/user')
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class UserController {
   constructor(
     private readonly userService: UserService,
