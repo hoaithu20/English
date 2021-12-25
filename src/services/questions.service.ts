@@ -15,6 +15,8 @@ import { UserRole } from 'src/constants/user-role.enum';
 import { GetQuestionRequest } from 'src/requests/question.request';
 import { GetQuestionType } from 'src/constants/get-question-type.enum';
 import { DoQuestionRequest } from 'src/requests/do-question.request';
+import { HistoryRepository } from 'src/repositories/history.repository';
+import { IsEmpty } from 'class-validator';
 
 @Injectable()
 export class QuestionsService {
@@ -22,6 +24,7 @@ export class QuestionsService {
     private readonly questionRepository: QuestionRepository,
     private readonly answerRepository: AnswerRepository,
     private readonly packageRepository: PackageRepository,
+    private readonly historyRepo: HistoryRepository,
     private readonly connection: Connection,
   ) { }
 
@@ -53,6 +56,7 @@ export class QuestionsService {
       .select('u.id as id')
       .where('u.role = :role', { role: UserRole.ADMIN })
       .getRawOne();
+    console.log('admin', admin)
     const status = admin.id === userId ? QuestionStatus.ACTIVE : QuestionStatus.INACTIVE;
 
     try {
@@ -90,17 +94,37 @@ export class QuestionsService {
   }
 
   async doQuestion(userId: number, request: DoQuestionRequest) {
-    
+    const history = await this.historyRepo
+     .createQueryBuilder()
+     .where('user_id = :userId AND package_id is NULL', {userId})
+     .getOne();
+    if (!history) {
+      const newHistory = this.historyRepo.create({
+        user: userId as any,
+        questions: request.question,
+      });
+      newHistory.save();
+    } else {
+      const questionIds = _.union(_.concat(history.questions, request.question));
+      history.questions = questionIds;
+      history.save();
+    }
   }
-
-
-
-
 
   async getQuestion(userId: number, request: GetQuestionRequest) {
     const pageSize = request.pageSize || 10;
     const pageIndex = request.pageIndex || 1;
-
+    let questionIds = []
+    const history = await this.historyRepo
+     .createQueryBuilder()
+     .where('user_id = :userId AND package_id is NULL', {userId})
+     .getOne();
+    console.log(history)
+    if (history) {
+      questionIds = history.questions;
+    }
+    questionIds = _.isEmpty(questionIds) ? null : questionIds;
+  
     const query = this.questionRepository
       .createQueryBuilder('q')
       .leftJoinAndSelect('q.answers', 'a')
@@ -111,6 +135,10 @@ export class QuestionsService {
       query.where('q.status = :status', { status: QuestionStatus.ACTIVE})
     } else if (request.type == GetQuestionType.INACTIVE) {
       query.where('q.status = :status', { status: QuestionStatus.INACTIVE})
+    } else if (request.type == GetQuestionType.DONE) {
+      query.where('q.id IN(:arr)', {arr: questionIds})
+    } else if (request.type == GetQuestionType.NOT_DONE) {
+      query.where('q.id NOT IN(:arr)', {arr: questionIds})
     } else {
       query.where('q.user_id = :userId', { userId })
     }

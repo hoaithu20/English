@@ -108,7 +108,6 @@ export class PackagesService {
       .createQueryBuilder(Week, 'w')
       .orderBy('w.id', 'DESC')
       .getOne();
-    console.log(currentWeek);
     const questionIds = _.map(request.questions, 'questionId');
     const questions = await this.questionRepository
       .createQueryBuilder('q')
@@ -182,8 +181,12 @@ export class PackagesService {
         'h.package_id as packageId',
         'p.name as name',
         'h.point as point',
+        'h.time as time',
+        'u.id as userId',
+        'u.username as username'
       ])
       .leftJoin('h.package', 'p')
+      .leftJoin('p.user', 'u')
       .where('h.user_id = :userId AND h.is_current = true', { userId })
       .orderBy('h.created_at', 'DESC');
 
@@ -221,6 +224,7 @@ export class PackagesService {
       totalDo: histories.length,
       maxPoint,
       averagePoint: sumPoint / histories.length,
+      totalQuestion: histories[0].package?.totalQuestion,
       items: histories.map((item) => ({
         time: item.time,
         point: item.point,

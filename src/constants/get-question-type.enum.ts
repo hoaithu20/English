@@ -1,5 +1,7 @@
 export enum GetQuestionType {
     ACTIVE,
     INACTIVE,
-    MINE
+    MINE,
+    DONE,
+    NOT_DONE,
 }

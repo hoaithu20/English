@@ -4,6 +4,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Param,
   Post,
   Query,
   Res,
@@ -28,16 +29,23 @@ export class UserController {
     private readonly userService: UserService,
     private readonly profileRepository: UserProfileRepository,
   ) { }
-
+  
   @Get('/user')
   @UseInterceptors(ClassSerializerInterceptor)
   async getUser() {
     return 'Success';
   }
 
-  @Post('profile')
-  async getProfile(@Body() request: { userId: number }) {
-    return await this.userService.getProfile(request.userId);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Post('profile/:userId?')
+  async getProfile(@CurrUser()user, @Query('user_id') userId?: number ) {
+    console.log(userId)
+    let id = 0;
+    if(userId) {
+      id = userId;
+    } else id = user.id
+    return await this.userService.getProfile(id);
   }
 
   @UseGuards(JwtAuthGuard)
