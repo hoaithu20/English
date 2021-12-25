@@ -57,14 +57,14 @@ export class UserController {
       if (profile) {
         (profile.dateOfBirth = request.date),
           profile.sex = request.sex,
-          profile.avatar = file.filename,
+          profile.avatar = file?.filename,
           profile.save();
       } else {
         const newProfile = this.profileRepository.create({
           user: user.id as any,
           dateOfBirth: request.date,
           sex: request.sex,
-          avatar: file.filename,
+          avatar: file?.filename,
         });
         newProfile.save();
       }
