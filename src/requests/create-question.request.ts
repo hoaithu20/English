@@ -36,15 +36,15 @@ export class CreateQuestionRequest {
   @IsEnum(Level)
   level: Level;
 
-  @ApiProperty()
-  @IsBoolean()
-  @IsOptional()
-  isHidden: boolean;
+  // @ApiProperty()
+  // @IsBoolean()
+  // @IsOptional()
+  // isHidden: boolean;
 
-  @ApiProperty()
-  @IsNumber()
-  @IsOptional()
-  totalAnswer: number;
+  // @ApiProperty()
+  // @IsNumber()
+  // @IsOptional()
+  // totalAnswer: number;
 
   @ApiProperty()
   @IsArray()
