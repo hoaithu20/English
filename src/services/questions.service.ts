@@ -11,6 +11,9 @@ import { PagingRequest } from 'src/requests/paging.request';
 import { Connection } from 'typeorm';
 import _ from 'lodash';
 import { GetDetailPackageRequest } from 'src/requests/get-detail-package.request';
+import { UserRole } from 'src/constants/user-role.enum';
+import { GetQuestionRequest } from 'src/requests/question.request';
+import { GetQuestionType } from 'src/constants/get-question-type.enum';
 
 @Injectable()
 export class QuestionsService {
@@ -19,7 +22,7 @@ export class QuestionsService {
     private readonly answerRepository: AnswerRepository,
     private readonly packageRepository: PackageRepository,
     private readonly connection: Connection,
-  ) {}
+  ) { }
 
   // async getListPackageOfUser() {}
 
@@ -39,11 +42,18 @@ export class QuestionsService {
       answers: _.shuffle(item.answers),
     }));
 
-    return [questionMap, count];
+    return [_.shuffle(questionMap), count];
   }
 
   async createQuestion(userId: number, request: CreateQuestionRequest) {
-    const { title, level, status, isHidden, answers } = request;
+    const { title, level, isHidden, answers } = request;
+    const admin = await this.connection.manager
+      .createQueryBuilder(User, 'u')
+      .select('u.id as id')
+      .where('u.role = :role', { role: UserRole.ADMIN })
+      .getRawOne();
+    const status = admin.id === userId ? QuestionStatus.ACTIVE : QuestionStatus.INACTIVE;
+
     try {
       await this.connection.transaction(async (manager) => {
         const newQuestion = this.questionRepository.create({
@@ -79,5 +89,33 @@ export class QuestionsService {
     }
   }
 
-  // async doQuestion() {}
+  async getQuestion(userId: number, request: GetQuestionRequest) {
+    const pageSize = request.pageSize || 1;
+    const pageIndex = request.pageIndex || 10;
+
+    const query = this.questionRepository
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.answers', 'a')
+      .orderBy('q.created_at', 'DESC')
+      .offset((pageIndex-1)*pageSize)
+      .limit(pageSize)
+    if (request.type == GetQuestionType.ACTIVE) {
+      query.where('q.status = :status', { status: QuestionStatus.ACTIVE})
+    } else if (request.type == GetQuestionType.INACTIVE) {
+      query.where('q.status = :status', { status: QuestionStatus.INACTIVE})
+    } else {
+      query.where('q.user_id = :userId', { userId })
+    }
+
+    if(request.level) {
+      query.andWhere('q.level = :level', { level: request.level})
+    }
+    if(request.search) {
+      query.andWhere('q.title LIKE :search', { search: '%' + request.search + '%', })
+    }
+    
+    const [data, count] = await Promise.all([query.getMany(), query.getCount()]);
+    
+      
+  }
 }

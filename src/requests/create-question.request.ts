@@ -37,17 +37,13 @@ export class CreateQuestionRequest {
   level: Level;
 
   @ApiProperty()
-  @IsOptional()
-  @IsEnum(QuestionStatus)
-  status: QuestionStatus;
-
-  @ApiProperty()
   @IsBoolean()
   @IsOptional()
   isHidden: boolean;
 
   @ApiProperty()
   @IsNumber()
+  @IsOptional()
   totalAnswer: number;
 
   @ApiProperty()
