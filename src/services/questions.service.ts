@@ -60,7 +60,6 @@ export class QuestionsService {
           title,
           level,
           status,
-          isHidden,
           totalAnswer: request.answers.length,
           user: userId as any,
         });
