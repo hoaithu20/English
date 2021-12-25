@@ -33,7 +33,7 @@ export class Profile extends BaseEntity {
   // country: string;
 
   @Column({ nullable: true })
-  sex: Sex;
+  sex: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

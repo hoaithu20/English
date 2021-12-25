@@ -47,6 +47,6 @@ export class AuthController {
     @CurrUser() user: User,
     @Body() request: ChangePasswordRequest,
   ) {
-    return await this.authService.changePassword(7, request);
+    return await this.authService.changePassword(user.id, request);
   }
 }

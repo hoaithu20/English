@@ -52,18 +52,18 @@ export class UserController {
     try {
       const profile = await this.profileRepository
         .createQueryBuilder()
-        .where('user_id = :userId', { userId: 9 })
+        .where('user_id = :userId', { userId: user.id })
         .getOne();
       if (profile) {
         (profile.dateOfBirth = request.date),
-          (profile.sex = Number(request.sex)),
-          (profile.avatar = file.filename),
+          profile.sex = request.sex,
+          profile.avatar = file.filename,
           profile.save();
       } else {
         const newProfile = this.profileRepository.create({
-          user: 9 as any,
+          user: user.id as any,
           dateOfBirth: request.date,
-          sex: Number(request.sex),
+          sex: request.sex,
           avatar: file.filename,
         });
         newProfile.save();
