@@ -5,6 +5,7 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Res,
   UploadedFile,
   UseGuards,
@@ -22,13 +23,11 @@ import { UpdateProfileRequest } from 'src/requests/update-profile.request';
 
 @ApiTags('/api/user')
 @Controller('/api/user')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly profileRepository: UserProfileRepository,
-  ) {}
+  ) { }
 
   @Get('/user')
   @UseInterceptors(ClassSerializerInterceptor)
@@ -36,11 +35,13 @@ export class UserController {
     return 'Success';
   }
 
-  @Get('profile')
-  async getProfile(@CurrUser() user: User) {
-    return await this.userService.getProfile(user.id);
+  @Post('profile')
+  async getProfile(@Body() request: { userId: number }) {
+    return await this.userService.getProfile(request.userId);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Post('update-profile')
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadFile(
@@ -51,7 +52,7 @@ export class UserController {
     try {
       const profile = await this.profileRepository
         .createQueryBuilder()
-        .where('user_id = :userId', { userId: user.id })
+        .where('user_id = :userId', { userId: 9 })
         .getOne();
       if (profile) {
         (profile.dateOfBirth = request.date),
@@ -60,7 +61,7 @@ export class UserController {
           profile.save();
       } else {
         const newProfile = this.profileRepository.create({
-          user: user.id as any,
+          user: 9 as any,
           dateOfBirth: request.date,
           sex: Number(request.sex),
           avatar: file.filename,
@@ -75,16 +76,10 @@ export class UserController {
     }
   }
 
-  @Get('avatar')
-  async getAvatar(@CurrUser() user: User, @Res() res) {
-    const profile = await this.profileRepository
-      .createQueryBuilder()
-      .where('user_id = :userId', { userId: user.id })
-      .getOne();
-    if (!profile) {
-      return;
-    }
-    return res.sendFile(profile.avatar, {
+  @Get('avatar/:img?')
+  async getAvatar(@Query('img') img: string, @Res() res) {
+    console.log(img)
+    return res.sendFile(img, {
       root: 'upload',
     });
   }
