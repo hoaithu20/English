@@ -9,6 +9,8 @@ export class UserService {
     const profile = await this.userRepository
       .createQueryBuilder('u')
       .select([
+        'u.íd as id',
+        'u.role as role',
         'u.email as email',
         'u.username as username',
         'p.avatar as avatar',
