@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { UserRole } from 'src/constants/user-role.enum';
 import { Roles } from 'src/decoraters/role.decorator';
@@ -18,7 +18,7 @@ export class AdminController {
         type: ApproveQuestionRequest
     })
     @Post('approve')
-    async approveQuestion(request: ApproveQuestionRequest) {
+    async approveQuestion(@Body() request: ApproveQuestionRequest) {
         return await this.adminService.approveQuestion(request)
     }
 }

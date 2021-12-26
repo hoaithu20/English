@@ -12,7 +12,7 @@ export class AdminService {
       .createQueryBuilder()
       .update(Question)
       .set({ status: request.status })
-      .where('id IN :id', {
+      .where('id IN(:id)', {
         id: request.questions,
       })
       .execute();
