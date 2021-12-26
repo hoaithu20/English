@@ -6,6 +6,7 @@ import { QuestionsController } from 'src/controllers/questions.controller';
 import { AnswerRepository } from 'src/repositories/answer.repository';
 import { HistoryRepository } from 'src/repositories/history.repository';
 import { PackageRepository } from 'src/repositories/package.repository';
+import { PointRepo } from 'src/repositories/point.repoitory';
 import { QuestionRepository } from 'src/repositories/question.repository';
 import { JwtStrategy } from 'src/security/jwt.strategy';
 import { LocalStrategy } from 'src/security/local.strategy';
@@ -18,6 +19,7 @@ import { QuestionsService } from 'src/services/questions.service';
       AnswerRepository,
       PackageRepository,
       HistoryRepository,
+      PointRepo,
     ]),
     // JwtModule.register({
     //   secret: 'yoona',

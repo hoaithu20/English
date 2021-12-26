@@ -59,4 +59,9 @@ export class QuestionsController {
   async doQuestion(@CurrUser() user, @Body() request: DoQuestionRequest) {
     return await this.questionService.doQuestion(user.id, request);
   }
+
+  @Get('get-statics')
+  async getStatics(@CurrUser() user) {
+    return await this.questionService.getStatics(user.id);
+  }
 }

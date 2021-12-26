@@ -32,7 +32,7 @@ export class PackagesService {
     private readonly pointRepo: PointRepo,
     private readonly configService: ConfigService,
     private readonly connection: Connection,
-  ) {}
+  ) { }
 
   async getAllPackage(request: PagingRequest) {
     const page = request.pageIndex || 1;
@@ -110,7 +110,20 @@ export class PackagesService {
       .createQueryBuilder(Week, 'w')
       .orderBy('w.id', 'DESC')
       .getOne();
-    const questionIds = _.map(request.questions, 'questionId');
+    const packages = await this.packageRepository
+      .createQueryBuilder()
+      .select('total_question as totalQuestion')
+      .where('id = :id', { id: request.packageId })
+      .getRawOne();
+    if (!packages) {
+      throw new BadRequestException({
+        code: ErrorCode.NOT_FOUND_PACKAGE
+      })
+    }
+
+    const questionIds = _.map(request.questions, 'questionId').length == 0
+      ? null
+      : _.map(request.questions, 'questionId');
     const questions = await this.questionRepository
       .createQueryBuilder('q')
       .leftJoinAndSelect('q.answers', 'a')
@@ -119,6 +132,12 @@ export class PackagesService {
 
     for (const item of request.questions) {
       const question = this.findQuestionById(questions, item.questionId);
+      const answerIds = _.map(question.answers, 'id')
+      if (!answerIds.includes(item.answerId)) {
+        throw new BadRequestException({
+          code: ErrorCode.ANSWER_NOT_IN_QUESTION
+        })
+      }
       if (question && question.correctAnswer == item.answerId) {
         countTrue++;
       }
@@ -132,7 +151,7 @@ export class PackagesService {
       .maxPoint as number;
     const point = new BigNumber(countTrue)
       .times(maxPoint)
-      .div(request.questions.length)
+      .div(packages.totalQuestion)
       .toFixed(2);
     await this.connection.transaction(async (manager) => {
       await this.connection.manager
@@ -144,13 +163,13 @@ export class PackagesService {
         })
         .execute();
       let questionMap: QuestionMap[] = [];
-      for(const i of request.questions) {
+      for (const i of request.questions) {
         const question: QuestionMap = {
           [i.questionId]: i.answerId
         }
-       questionMap.push(question)
+        questionMap.push(question)
       }
-      console.log('yoona',questionMap);
+      console.log('yoona', questionMap);
       console.log(request.packageId)
 
       const newHistory = this.historyRepository.create({
@@ -251,14 +270,14 @@ export class PackagesService {
     const pageIndex = request.pageIndex || 1;
     const pageSize = request.pageSize || 10;
 
-    const history = await this.historyRepository 
+    const history = await this.historyRepository
       .createQueryBuilder('h')
       .where('h.user_id = :userId AND h.id = :id', {
         userId,
         id: request.historyId,
       })
       .getOne();
-    if(!history) {
+    if (!history) {
       throw new BadRequestException({
         code: ErrorCode.NOT_FOUND_HISTORY
       })
@@ -278,15 +297,15 @@ export class PackagesService {
       .where('q.id IN (:arr)', {
         arr: packages.questionIds,
       })
-      .offset((pageIndex-1)*pageSize)
+      .offset((pageIndex - 1) * pageSize)
       .limit(pageSize)
       .getMany();
     let questionArr = [];
     console.log(history.questionMap)
-    for(const item of history.questionMap) {
-     
+    for (const item of history.questionMap) {
+
       const key = Object.keys(item)
-      console.log(typeof(key[0]));
+      console.log(typeof (key[0]));
       const question = this.findQuestionById(questions, Number(key[0]));
       questionArr.push({
         question: {

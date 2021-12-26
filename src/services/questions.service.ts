@@ -16,6 +16,9 @@ import { GetQuestionRequest } from 'src/requests/question.request';
 import { GetQuestionType } from 'src/constants/get-question-type.enum';
 import { DoQuestionRequest } from 'src/requests/do-question.request';
 import { HistoryRepository } from 'src/repositories/history.repository';
+import { PointRepo } from 'src/repositories/point.repoitory';
+import BigNumber from 'bignumber.js';
+import { formatDecimal } from 'src/utils/convert';
 import { IsEmpty } from 'class-validator';
 
 @Injectable()
@@ -25,8 +28,9 @@ export class QuestionsService {
     private readonly answerRepository: AnswerRepository,
     private readonly packageRepository: PackageRepository,
     private readonly historyRepo: HistoryRepository,
+    private readonly pointRepo: PointRepo,
     private readonly connection: Connection,
-  ) {}
+  ) { }
 
   // async getListPackageOfUser() {}
 
@@ -162,5 +166,40 @@ export class QuestionsService {
       query.getCount(),
     ]);
     return [data, count];
+  }
+
+  async getStatics(userId: number) {
+    const points = await this.pointRepo
+      .createQueryBuilder()
+      .select(['point'])
+      .where('user_id = :userId', { userId })
+      .getRawMany();
+    let totalPoint = new BigNumber(0);
+    for(const i of points) {
+      totalPoint = totalPoint.plus(i.point);
+    }
+    const query = this.historyRepo
+      .createQueryBuilder()
+      .where('user_id = :userId', { userId })
+
+    const [question, pakcages] = await Promise.all([
+      query.clone().select('questions').andWhere('package_id IS NULL').getRawOne(),
+      query.select('package_id as packageId').andWhere('package_id IS NOT NULL').getRawMany()
+    ])
+
+    const allQuestion = await this.questionRepository
+      .createQueryBuilder()
+      .where('status = :st', { st: QuestionStatus.ACTIVE })
+      .getCount();
+    const allPackage = await this.packageRepository
+      .createQueryBuilder()
+      .getCount();
+    return {
+      totalPoint: formatDecimal(totalPoint),
+      questions: question ? question.questions.length : 0,
+      packages: _.union(_.map(pakcages,'packageId')).length,
+      totalQuestion: allQuestion,
+      totalPackage: allPackage,
+    }
   }
 }
