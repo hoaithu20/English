@@ -5,10 +5,12 @@ import { AnswerRepository } from 'src/repositories/answer.repository';
 import { User } from 'src/repositories/entities/user.entity';
 import { PackageRepository } from 'src/repositories/package.repository';
 import { QuestionRepository } from 'src/repositories/question.repository';
+import { CreatePackageRequest } from 'src/requests/create-package.request';
 import { CreateQuestionRequest } from 'src/requests/create-question.request';
 import { PagingRequest } from 'src/requests/paging.request';
 import { Connection } from 'typeorm';
 import _ from 'lodash';
+import { GetDetailPackageRequest } from 'src/requests/get-detail-package.request';
 import { UserRole } from 'src/constants/user-role.enum';
 import { GetQuestionRequest } from 'src/requests/question.request';
 import { GetQuestionType } from 'src/constants/get-question-type.enum';
@@ -17,6 +19,7 @@ import { HistoryRepository } from 'src/repositories/history.repository';
 import { PointRepo } from 'src/repositories/point.repoitory';
 import BigNumber from 'bignumber.js';
 import { formatDecimal } from 'src/utils/convert';
+import { IsEmpty } from 'class-validator';
 
 @Injectable()
 export class QuestionsService {
@@ -200,5 +203,10 @@ export class QuestionsService {
       totalPackage: allPackage,
     }
 
+    const [data, count] = await Promise.all([
+      query.getMany(),
+      query.getCount(),
+    ]);
+    return [data, count];
   }
 }
