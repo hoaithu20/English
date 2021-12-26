@@ -132,8 +132,8 @@ export class QuestionsService {
       .createQueryBuilder('q')
       .leftJoinAndSelect('q.answers', 'a')
       .orderBy('q.created_at', 'DESC')
-      .offset((pageIndex - 1) * pageSize)
-      .limit(pageSize);
+      .skip((pageIndex - 1) * pageSize)
+      .take(pageSize)
     if (request.type == GetQuestionType.ACTIVE) {
       query.where('q.status = :status', { status: QuestionStatus.ACTIVE });
     } else if (request.type == GetQuestionType.INACTIVE) {
