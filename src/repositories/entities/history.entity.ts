@@ -12,6 +12,10 @@ import {
 import { Package } from './package.entity';
 import { User } from './user.entity';
 
+export interface QuestionMap {
+  [questionId: number]: number;
+}
+
 @Entity('history')
 export class History extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -48,6 +52,9 @@ export class History extends BaseEntity {
 
   @Column({ nullable: true, default: null, type: 'json' })
   questions: number[];
+
+  @Column({name: 'question_map', type: 'json'})
+  questionMap: QuestionMap[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

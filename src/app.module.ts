@@ -7,6 +7,7 @@ import configuration from './configs/configuration';
 import { AuthModule } from './modules/auth.module';
 import { UserModule } from './modules/user.module';
 import { QuestionsModule } from './modules/questions.module';
+import { AdminModule } from './modules/admin.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { QuestionsModule } from './modules/questions.module';
     AuthModule,
     UserModule,
     QuestionsModule,
+    AdminModule
   ],
   controllers: [AppController],
   providers: [AppService],

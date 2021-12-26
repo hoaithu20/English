@@ -5,7 +5,7 @@ import { QuestionRepository } from 'src/repositories/question.repository';
 import { CreatePackageRequest } from 'src/requests/create-package.request';
 import { GetDetailPackageRequest } from 'src/requests/get-detail-package.request';
 import { Connection } from 'typeorm';
-import _ from 'lodash';
+import _, { identity } from 'lodash';
 import { ErrorCode } from 'src/constants/errorcode.constant';
 import { DoPackageRequest } from 'src/requests/todo-package.request';
 import { HistoryRepository } from 'src/repositories/history.repository';
@@ -17,9 +17,10 @@ import { Point } from 'src/repositories/entities/point.entity';
 import { PointRepo } from 'src/repositories/point.repoitory';
 import { BigNumber } from 'bignumber.js';
 import { GetLeaderBoardRequest } from 'src/requests/get-leaderboard.request';
-import { History } from 'src/repositories/entities/history.entity';
+import { History, QuestionMap } from 'src/repositories/entities/history.entity';
 import { QuestionStatus } from 'src/constants/question-status.enum';
 import { formatDecimal } from 'src/utils/convert';
+import { GetDetailHistoryRequest } from 'src/requests/get-detail-history.rquest';
 
 @Injectable()
 export class PackagesService {
@@ -72,6 +73,7 @@ export class PackagesService {
         item.answers.map((i) => ({
           id: i.id,
           content: i.content,
+          description: i.description,
           isTrue: i.isTrue,
         })),
       ),
@@ -141,12 +143,22 @@ export class PackagesService {
           packageId: request.packageId,
         })
         .execute();
+      let questionMap: QuestionMap[] = [];
+      for(const i of request.questions) {
+        const question: QuestionMap = {
+          [i.questionId]: i.answerId
+        }
+       questionMap.push(question)
+      }
+      console.log('yoona',questionMap);
+      console.log(request.packageId)
 
       const newHistory = this.historyRepository.create({
         user: userId as any,
-        packageId: request.packageId,
+        package: request.packageId as any,
         time: request.time,
         point,
+        questionMap,
       });
       const points = await this.pointRepo.findOne({
         where: {
@@ -221,27 +233,97 @@ export class PackagesService {
     );
 
     return {
-      totalDo: histories.length,
       maxPoint,
       averagePoint: sumPoint / histories.length,
       totalQuestion: histories[0].package?.totalQuestion,
+      namePackage: histories[0].package.name,
       items: histories.map((item) => ({
+        historyId: item.id,
         time: item.time,
         point: item.point,
         createAt: item.createdAt,
-        namePackage: item.package.name,
+        totalDo: Object.keys(item.questionMap).length
       })),
     };
   }
 
-  async getLeaderBoard(userId: number, request: GetLeaderBoardRequest) {
+  async getDetailHistory(userId: number, request: GetDetailHistoryRequest) {
+    const pageIndex = request.pageIndex || 1;
+    const pageSize = request.pageSize || 10;
+
+    const history = await this.historyRepository 
+      .createQueryBuilder('h')
+      .where('h.user_id = :userId AND h.id = :id', {
+        userId,
+        id: request.historyId,
+      })
+      .getOne();
+    if(!history) {
+      throw new BadRequestException({
+        code: ErrorCode.NOT_FOUND_HISTORY
+      })
+    }
+    const packages = await this.packageRepository
+      .createQueryBuilder()
+      .where('id = :id', { id: history.packageId })
+      .getOne();
+    if (!packages) {
+      throw new BadRequestException({
+        code: ErrorCode.NOT_FOUND_PACKAGE,
+      });
+    }
+    const questions = await this.questionRepository
+      .createQueryBuilder('q')
+      .innerJoinAndSelect('q.answers', 'a')
+      .where('q.id IN (:arr)', {
+        arr: packages.questionIds,
+      })
+      .offset((pageIndex-1)*pageSize)
+      .limit(pageSize)
+      .getMany();
+    let questionArr = [];
+    console.log(history.questionMap)
+    for(const item of history.questionMap) {
+     
+      const key = Object.keys(item)
+      console.log(typeof(key[0]));
+      const question = this.findQuestionById(questions, Number(key[0]));
+      questionArr.push({
+        question: {
+          id: question.id,
+          level: question.level,
+          title: question.title,
+          correctAnswer: question.correctAnswer,
+          answer: question.answers.map((a) => ({
+            id: a.id,
+            content: a.content,
+            description: a.description,
+            isTrue: a.isTrue,
+          }))
+        },
+        answerPick: item[key[0]]
+      });
+    }
+    console.log(questionArr)
+    return {
+      point: history.point,
+      time: history.time,
+      timePackage: packages.timeOut,
+      namePackage: packages.name,
+      questions: questionArr,
+    }
+
+  }
+
+  async getLeaderBoard(request: GetLeaderBoardRequest) {
     // const page = request.pageIndex || 1;
     // const pageSize = request.pageSize || 10;
 
     const query = await this.pointRepo
       .createQueryBuilder('p')
-      .select(['p.point as point', 'u.username as username', 'u.id as userId'])
+      .select(['p.point as point', 'u.username as username', 'u.id as userId', 'pp.avatar as avatar'])
       .leftJoin('p.user', 'u')
+      .leftJoin('u.profile', 'pp')
       .where('p.week = :week AND p.point > 0', { week: request.week })
       .orderBy('p.point', 'DESC')
       .offset(0)

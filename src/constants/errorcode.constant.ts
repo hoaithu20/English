@@ -16,4 +16,5 @@ export enum ErrorCode {
   PASSWORD_NOT_MATCH = '12',
   INVALID_OTP = '13',
   INVALID_PASSWORD_FORMAT = '14',
+  NOT_FOUND_HISTORY ='15'
 }

@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { CurrUser } from 'src/decoraters/user.decorator';
 import { User } from 'src/repositories/entities/user.entity';
 import { CreatePackageRequest } from 'src/requests/create-package.request';
+import { GetDetailHistoryRequest } from 'src/requests/get-detail-history.rquest';
 import { GetDetailPackageRequest } from 'src/requests/get-detail-package.request';
 import { GetLeaderBoardRequest } from 'src/requests/get-leaderboard.request';
 import { PagingRequest } from 'src/requests/paging.request';
@@ -13,8 +14,8 @@ import { PackagesService } from 'src/services/packages.service';
 
 @ApiTags('/api/package')
 @Controller('api/package')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
+// @UseGuards(JwtAuthGuard)
+// @ApiBearerAuth()
 export class PackagesController {
   constructor(private readonly packageService: PackagesService) {}
 
@@ -52,7 +53,7 @@ export class PackagesController {
   })
   @Post('do-package')
   async doPackage(@CurrUser() user: User, @Body() request: DoPackageRequest) {
-    return await this.packageService.todoPackage(user.id, request);
+    return await this.packageService.todoPackage(7, request);
   }
 
   @Post('get-history')
@@ -64,22 +65,35 @@ export class PackagesController {
     return PaginateResult.init(data, count);
   }
 
-  @Post('get-detail-history')
+  @Post('get-detail-package-history')
   async getDetail(
     @CurrUser() user: User,
     @Body() request: { packageId: number },
   ) {
     return await this.packageService.getDetailPackageHistory(
-      user.id,
+      7,
       request.packageId,
+    );
+  }
+
+  @ApiBody({
+    type: GetDetailHistoryRequest
+  })
+  @Post('get-detail-history')
+  async getDetailHistory(
+    @CurrUser() user: User,
+    @Body() request: GetDetailHistoryRequest,
+  ) {
+    return await this.packageService.getDetailHistory(
+      7,
+      request,
     );
   }
 
   @Post('leaderboard')
   async getLeaderBoard(
-    @CurrUser() user: User,
     @Body() request: GetLeaderBoardRequest,
   ) {
-    return await this.packageService.getLeaderBoard(user.id, request);
+    return await this.packageService.getLeaderBoard(request);
   }
 }

@@ -10,6 +10,7 @@ import { AuthService } from 'src/services/auth.service';
 import { QuestionsModule } from './questions.module';
 import { PackagesModule } from './packages.module';
 import { MailModule } from 'src/mail/mail.module';
+import { AdminModule } from './admin.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { MailModule } from 'src/mail/mail.module';
     PassportModule,
     PackagesModule,
     MailModule,
+    AdminModule,
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
