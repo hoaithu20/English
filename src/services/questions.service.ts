@@ -171,7 +171,7 @@ export class QuestionsService {
   async getStatics(userId: number) {
     const points = await this.pointRepo
       .createQueryBuilder()
-      .select('point')
+      .select(['point'])
       .where('user_id = :userId', { userId })
       .getRawMany();
     let totalPoint = new BigNumber(0);
@@ -186,7 +186,6 @@ export class QuestionsService {
       query.clone().select('questions').andWhere('package_id IS NULL').getRawOne(),
       query.select('package_id as packageId').andWhere('package_id IS NOT NULL').getRawMany()
     ])
-    console.log(question, pakcages)
 
     const allQuestion = await this.questionRepository
       .createQueryBuilder()
@@ -202,11 +201,5 @@ export class QuestionsService {
       totalQuestion: allQuestion,
       totalPackage: allPackage,
     }
-
-    const [data, count] = await Promise.all([
-      query.getMany(),
-      query.getCount(),
-    ]);
-    return [data, count];
   }
 }
