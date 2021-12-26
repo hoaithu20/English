@@ -1,8 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsOptional, IsString } from "class-validator";
-import { PagingRequest } from "./paging.request";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
+import { PagingRequest } from './paging.request';
 
-export class GetListQuestion extends PagingRequest{
+export class GetListQuestion extends PagingRequest {
   @ApiProperty()
   @IsOptional()
   @IsString()

@@ -13,13 +13,18 @@ export default () => ({
     factories: ['dist/migrations/factories/*.factory{.ts,.js}'],
     seeds: ['dist/migrations/seeders/*.seed{.ts,.js}'],
     logging: true,
+    timezone: 'UTC+7',
   },
   httpConfig: {
     timeout: parseInt(process.env.HTTP_TIMEOUT, 10) || 30000,
   },
   authConfig: {
     secretKey: process.env.SECRET_KEY,
-    saltOrRounds: process.env.SALT_OR_ROUNDS,
+    saltOrRounds: parseInt(process.env.SALT_OR_ROUNDS),
+    expriedToken: process.env.EXPRIED_TOKEN,
+  },
+  questionConfig: {
+    maxPoint: parseInt(process.env.MAX_POINT),
   },
   // authOptions: {
   //   google: {

@@ -4,25 +4,30 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
-import { BaseResponse } from 'src/responses/base.response';
 import { map } from 'rxjs/operators';
+import { PaginateResult } from '../responses/PaginateResult';
+import { BaseResponse } from 'src/responses/base.response';
 import { ErrorCode } from 'src/constants/errorcode.constant';
 
 @Injectable()
 export class TransformInterceptor<T>
   implements NestInterceptor<T, BaseResponse<T>>
 {
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler<T>,
-  ): Observable<BaseResponse<T>> | Promise<Observable<BaseResponse<T>>> {
+  intercept(context: ExecutionContext, next: CallHandler<T>) {
     return next.handle().pipe(
       map((data) => {
-        const baseResponse = new BaseResponse<T>();
+        const baseResponse = new BaseResponse<any>();
         baseResponse.code = ErrorCode.SUCCESS;
-        baseResponse.data = data;
-
+        if (data instanceof PaginateResult) {
+          baseResponse.data = {
+            items: data.items,
+            meta: {
+              count: data.count,
+            },
+          };
+        } else {
+          baseResponse.data = data;
+        }
         return baseResponse;
       }),
     );

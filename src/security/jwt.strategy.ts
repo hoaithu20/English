@@ -5,11 +5,11 @@ import { UserRepository } from 'src/repositories/user.repository';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor( private readonly userRepository: UserRepository) {
+  constructor(private readonly userRepository: UserRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'yoona',
+      secretOrKey: 'vatta',
     });
   }
 

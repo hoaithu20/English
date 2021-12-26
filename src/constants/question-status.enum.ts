@@ -1,4 +1,5 @@
 export enum QuestionStatus {
-  PRIVATE = 0,
-  PUBLIC = 1,
+  ACTIVE = 0,
+  INACTIVE = 1,
+  BLOCK = 2,
 }

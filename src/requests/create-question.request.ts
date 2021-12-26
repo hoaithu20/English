@@ -1,8 +1,15 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsArray, IsBoolean, IsEmail, IsEnum, IsOptional, IsString } from "class-validator";
-import { Level } from "src/constants/level.enum";
-import { QuestionStatus } from "src/constants/question-status.enum";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { Level } from 'src/constants/level.enum';
+import { QuestionStatus } from 'src/constants/question-status.enum';
 
 class Answer {
   @ApiProperty()
@@ -25,22 +32,22 @@ export class CreateQuestionRequest {
   title: string;
 
   @ApiProperty()
+  @IsOptional()
   @IsEnum(Level)
   level: Level;
 
-  @ApiProperty()
-  @IsEnum(QuestionStatus)
-  status: QuestionStatus;
+  // @ApiProperty()
+  // @IsBoolean()
+  // @IsOptional()
+  // isHidden: boolean;
 
-  @ApiProperty()
-  @IsBoolean()
-  isHidden: boolean;
+  // @ApiProperty()
+  // @IsNumber()
+  // @IsOptional()
+  // totalAnswer: number;
 
   @ApiProperty()
   @IsArray()
   @Type(() => Answer)
   answers: Answer[];
-
-
-
 }

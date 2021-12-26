@@ -13,7 +13,6 @@ async function bootstrap() {
   });
 
   swaggerConfig(app);
-
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
