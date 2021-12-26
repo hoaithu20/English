@@ -14,8 +14,8 @@ import { PackagesService } from 'src/services/packages.service';
 
 @ApiTags('/api/package')
 @Controller('api/package')
-// @UseGuards(JwtAuthGuard)
-// @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class PackagesController {
   constructor(private readonly packageService: PackagesService) {}
 
@@ -45,6 +45,7 @@ export class PackagesController {
     @CurrUser() user: User,
     @Body() request: CreatePackageRequest,
   ) {
+    console.log(user)
     return this.packageService.createPackage(user.id, request);
   }
 
@@ -53,7 +54,7 @@ export class PackagesController {
   })
   @Post('do-package')
   async doPackage(@CurrUser() user: User, @Body() request: DoPackageRequest) {
-    return await this.packageService.todoPackage(7, request);
+    return await this.packageService.todoPackage(user.id, request);
   }
 
   @Post('get-history')
@@ -71,7 +72,7 @@ export class PackagesController {
     @Body() request: { packageId: number },
   ) {
     return await this.packageService.getDetailPackageHistory(
-      7,
+      user.id,
       request.packageId,
     );
   }
@@ -85,7 +86,7 @@ export class PackagesController {
     @Body() request: GetDetailHistoryRequest,
   ) {
     return await this.packageService.getDetailHistory(
-      7,
+      user.id,
       request,
     );
   }

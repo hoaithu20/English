@@ -75,6 +75,7 @@ export class UserController {
           avatar: file?.filename,
         });
         newProfile.save();
+        return newProfile;
       }
       return profile;
     } catch (err) {

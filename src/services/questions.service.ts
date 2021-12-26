@@ -115,6 +115,7 @@ export class QuestionsService {
   }
 
   async getQuestion(userId: number, request: GetQuestionRequest) {
+    console.log(request)
     const pageSize = request.pageSize || 10;
     const pageIndex = request.pageIndex || 1;
     let questionIds = [];
@@ -147,6 +148,7 @@ export class QuestionsService {
     }
 
     if (request.level) {
+      console.log('level', request.level)
       query.andWhere('q.level = :level', { level: request.level });
     }
     if (request.search) {
