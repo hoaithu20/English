@@ -130,10 +130,10 @@ export class QuestionsService {
 
     const query = this.questionRepository
       .createQueryBuilder('q')
-      .leftJoinAndSelect('q.answers', 'a')
-      .orderBy('q.created_at', 'DESC')
       .skip((pageIndex - 1) * pageSize)
       .take(pageSize)
+      .leftJoinAndSelect('q.answers', 'a')
+      .orderBy('q.createdAt', 'DESC')
     if (request.type == GetQuestionType.ACTIVE) {
       query.where('q.status = :status', { status: QuestionStatus.ACTIVE });
     } else if (request.type == GetQuestionType.INACTIVE) {
