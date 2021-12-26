@@ -31,17 +31,23 @@ export class History extends BaseEntity {
   @RelationId((h: History) => h.package)
   packageId: number;
 
-  @Column({ name: 'time', default: 0})
+  @Column({ name: 'time', default: 0 })
   time: number;
 
-  @Column({ name: 'point', type: 'decimal', precision: 5, scale: 2, default: 0})
+  @Column({
+    name: 'point',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    default: 0,
+  })
   point: string;
 
   @Column({ name: 'is_current', default: true })
   isCurrent: boolean;
 
-  @Column({nullable: true, default: null, type: 'json'})
-  questions: number[]
+  @Column({ nullable: true, default: null, type: 'json' })
+  questions: number[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

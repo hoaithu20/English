@@ -13,7 +13,7 @@ export default () => ({
     factories: ['dist/migrations/factories/*.factory{.ts,.js}'],
     seeds: ['dist/migrations/seeders/*.seed{.ts,.js}'],
     logging: true,
-    timezone: 'UTC+7'
+    timezone: 'UTC+7',
   },
   httpConfig: {
     timeout: parseInt(process.env.HTTP_TIMEOUT, 10) || 30000,

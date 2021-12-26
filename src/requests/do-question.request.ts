@@ -1,8 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsArray } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsArray } from 'class-validator';
 
 export class DoQuestionRequest {
-    @ApiProperty()
-    @IsArray()
-    question: number[];
+  @ApiProperty()
+  @IsArray()
+  question: number[];
 }

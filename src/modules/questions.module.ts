@@ -17,7 +17,7 @@ import { QuestionsService } from 'src/services/questions.service';
       QuestionRepository,
       AnswerRepository,
       PackageRepository,
-      HistoryRepository
+      HistoryRepository,
     ]),
     // JwtModule.register({
     //   secret: 'yoona',

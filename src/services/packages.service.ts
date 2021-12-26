@@ -183,7 +183,7 @@ export class PackagesService {
         'h.point as point',
         'h.time as time',
         'u.id as userId',
-        'u.username as username'
+        'u.username as username',
       ])
       .leftJoin('h.package', 'p')
       .leftJoin('p.user', 'u')

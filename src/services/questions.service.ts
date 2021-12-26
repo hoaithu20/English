@@ -26,7 +26,7 @@ export class QuestionsService {
     private readonly packageRepository: PackageRepository,
     private readonly historyRepo: HistoryRepository,
     private readonly connection: Connection,
-  ) { }
+  ) {}
 
   // async getListPackageOfUser() {}
 
@@ -56,8 +56,9 @@ export class QuestionsService {
       .select('u.id as id')
       .where('u.role = :role', { role: UserRole.ADMIN })
       .getRawOne();
-    console.log('admin', admin)
-    const status = admin.id === userId ? QuestionStatus.ACTIVE : QuestionStatus.INACTIVE;
+    console.log('admin', admin);
+    const status =
+      admin.id === userId ? QuestionStatus.ACTIVE : QuestionStatus.INACTIVE;
 
     try {
       await this.connection.transaction(async (manager) => {
@@ -95,9 +96,9 @@ export class QuestionsService {
 
   async doQuestion(userId: number, request: DoQuestionRequest) {
     const history = await this.historyRepo
-     .createQueryBuilder()
-     .where('user_id = :userId AND package_id is NULL', {userId})
-     .getOne();
+      .createQueryBuilder()
+      .where('user_id = :userId AND package_id is NULL', { userId })
+      .getOne();
     if (!history) {
       const newHistory = this.historyRepo.create({
         user: userId as any,
@@ -105,7 +106,9 @@ export class QuestionsService {
       });
       newHistory.save();
     } else {
-      const questionIds = _.union(_.concat(history.questions, request.question));
+      const questionIds = _.union(
+        _.concat(history.questions, request.question),
+      );
       history.questions = questionIds;
       history.save();
     }
@@ -114,43 +117,48 @@ export class QuestionsService {
   async getQuestion(userId: number, request: GetQuestionRequest) {
     const pageSize = request.pageSize || 10;
     const pageIndex = request.pageIndex || 1;
-    let questionIds = []
+    let questionIds = [];
     const history = await this.historyRepo
-     .createQueryBuilder()
-     .where('user_id = :userId AND package_id is NULL', {userId})
-     .getOne();
-    console.log(history)
+      .createQueryBuilder()
+      .where('user_id = :userId AND package_id is NULL', { userId })
+      .getOne();
+    console.log(history);
     if (history) {
       questionIds = history.questions;
     }
     questionIds = _.isEmpty(questionIds) ? null : questionIds;
-  
+
     const query = this.questionRepository
       .createQueryBuilder('q')
       .leftJoinAndSelect('q.answers', 'a')
       .orderBy('q.created_at', 'DESC')
-      .offset((pageIndex-1)*pageSize)
-      .limit(pageSize)
+      .offset((pageIndex - 1) * pageSize)
+      .limit(pageSize);
     if (request.type == GetQuestionType.ACTIVE) {
-      query.where('q.status = :status', { status: QuestionStatus.ACTIVE})
+      query.where('q.status = :status', { status: QuestionStatus.ACTIVE });
     } else if (request.type == GetQuestionType.INACTIVE) {
-      query.where('q.status = :status', { status: QuestionStatus.INACTIVE})
+      query.where('q.status = :status', { status: QuestionStatus.INACTIVE });
     } else if (request.type == GetQuestionType.DONE) {
-      query.where('q.id IN(:arr)', {arr: questionIds})
+      query.where('q.id IN(:arr)', { arr: questionIds });
     } else if (request.type == GetQuestionType.NOT_DONE) {
-      query.where('q.id NOT IN(:arr)', {arr: questionIds})
+      query.where('q.id NOT IN(:arr)', { arr: questionIds });
     } else {
-      query.where('q.user_id = :userId', { userId })
+      query.where('q.user_id = :userId', { userId });
     }
 
-    if(request.level) {
-      query.andWhere('q.level = :level', { level: request.level})
+    if (request.level) {
+      query.andWhere('q.level = :level', { level: request.level });
     }
-    if(request.search) {
-      query.andWhere('q.title LIKE :search', { search: '%' + request.search + '%', })
+    if (request.search) {
+      query.andWhere('q.title LIKE :search', {
+        search: '%' + request.search + '%',
+      });
     }
-    
-    const [data, count] = await Promise.all([query.getMany(), query.getCount()]);
-    return [data, count];   
+
+    const [data, count] = await Promise.all([
+      query.getMany(),
+      query.getCount(),
+    ]);
+    return [data, count];
   }
 }

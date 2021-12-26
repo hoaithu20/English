@@ -28,8 +28,8 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly profileRepository: UserProfileRepository,
-  ) { }
-  
+  ) {}
+
   @Get('/user')
   @UseInterceptors(ClassSerializerInterceptor)
   async getUser() {
@@ -39,12 +39,12 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post('profile/:userId?')
-  async getProfile(@CurrUser()user, @Query('user_id') userId?: number ) {
-    console.log(userId)
+  async getProfile(@CurrUser() user, @Query('user_id') userId?: number) {
+    console.log(userId);
     let id = 0;
-    if(userId) {
+    if (userId) {
       id = userId;
-    } else id = user.id
+    } else id = user.id;
     return await this.userService.getProfile(id);
   }
 
@@ -64,8 +64,8 @@ export class UserController {
         .getOne();
       if (profile) {
         (profile.dateOfBirth = request.date),
-          profile.sex = request.sex,
-          profile.avatar = file?.filename,
+          (profile.sex = request.sex),
+          (profile.avatar = file?.filename),
           profile.save();
       } else {
         const newProfile = this.profileRepository.create({
@@ -86,7 +86,7 @@ export class UserController {
 
   @Get('avatar/:img?')
   async getAvatar(@Query('img') img: string, @Res() res) {
-    console.log(img)
+    console.log(img);
     return res.sendFile(img, {
       root: 'upload',
     });

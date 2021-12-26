@@ -26,7 +26,6 @@ export class QuestionsController {
     return PaginateResult.init(result, count);
   }
 
-
   @ApiBody({
     type: CreateQuestionRequest,
   })
@@ -42,9 +41,15 @@ export class QuestionsController {
     type: GetQuestionRequest,
   })
   @Post('list-question')
-  async listQuestion(@CurrUser()user: User,@Body() request: GetQuestionRequest) {
-    const [data, count] = await this.questionService.getQuestion(user.id, request);
-    return PaginateResult.init(data, count)
+  async listQuestion(
+    @CurrUser() user: User,
+    @Body() request: GetQuestionRequest,
+  ) {
+    const [data, count] = await this.questionService.getQuestion(
+      user.id,
+      request,
+    );
+    return PaginateResult.init(data, count);
   }
 
   @ApiBody({
@@ -52,6 +57,6 @@ export class QuestionsController {
   })
   @Post('do-question')
   async doQuestion(@CurrUser() user, @Body() request: DoQuestionRequest) {
-    return await this.questionService.doQuestion(user.id, request)
+    return await this.questionService.doQuestion(user.id, request);
   }
 }
