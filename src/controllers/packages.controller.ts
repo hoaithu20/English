@@ -45,7 +45,6 @@ export class PackagesController {
     @CurrUser() user: User,
     @Body() request: CreatePackageRequest,
   ) {
-    console.log(user)
     return this.packageService.createPackage(user.id, request);
   }
 

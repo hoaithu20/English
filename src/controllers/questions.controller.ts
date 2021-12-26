@@ -46,7 +46,7 @@ export class QuestionsController {
     @Body() request: GetQuestionRequest,
   ) {
     const [data, count] = await this.questionService.getQuestion(
-      1,
+      user.id,
       request,
     );
     return PaginateResult.init(data, count);
