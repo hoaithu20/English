@@ -6,7 +6,7 @@ import { ApproveQuestionRequest } from 'src/requests/approve-question.request';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard';
 import { AdminService } from 'src/services/admin.service';
 
-@ApiTags('/api/auth')
+@ApiTags('/api/admin')
 @Controller('api/admin')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
