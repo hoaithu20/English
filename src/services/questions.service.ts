@@ -84,7 +84,7 @@ export class QuestionsService {
             description: answer.explain,
           });
           await manager.save(newAnswer);
-          if ((newAnswer.isTrue = true)) {
+          if ((newAnswer.isTrue === true)) {
             correctAnswer = newAnswer.id;
           }
         }
