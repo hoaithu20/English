@@ -64,7 +64,7 @@ export class QuestionsService {
     const status =
       admin.id === userId ? QuestionStatus.ACTIVE : QuestionStatus.INACTIVE;
 
-    try {
+    //try {
       await this.connection.transaction(async (manager) => {
         const newQuestion = this.questionRepository.create({
           title,
@@ -91,11 +91,11 @@ export class QuestionsService {
         newQuestion.correctAnswer = correctAnswer;
         await manager.save(newQuestion);
       });
-    } catch (err) {
-      throw new BadRequestException({
-        code: ErrorCode.UNSUCCESS,
-      });
-    }
+    // } catch (err) {
+    //   throw new BadRequestException({
+    //     code: ErrorCode.UNSUCCESS,
+    //   });
+    // }
   }
 
   async doQuestion(userId: number, request: DoQuestionRequest) {
