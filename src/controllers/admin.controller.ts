@@ -48,8 +48,8 @@ export class AdminController {
   @Post('create-story')
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'audio', maxCount: 1 },
-      { name: 'image', maxCount: 1 },
+      { name: 'audio' },
+      { name: 'image' },
     ]),
   )
   async createStory(
@@ -58,9 +58,10 @@ export class AdminController {
     @Body() request: CreateStoryRequest,
   ) {
     try {
+      console.log(files.audio)
       const newStory = this.connection.manager.create(Story, {
-        audio: files.audio.filename,
-        img: files.image.fieldname,
+        audio: files.audio[0].filename,
+        img: files.image[0].filename,
         content: request.content,
       });
       await this.connection.manager.save(newStory);
@@ -78,8 +79,8 @@ export class AdminController {
   @Post('update-story')
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'audio', maxCount: 1 },
-      { name: 'image', maxCount: 1 },
+      { name: 'audio'},
+      { name: 'image'},
     ]),
   )
   async updateStory(
@@ -100,6 +101,5 @@ export class AdminController {
         code: ErrorCode.UNSUCCESS,
       });
     }
-    console.log(files);
   }
 }
