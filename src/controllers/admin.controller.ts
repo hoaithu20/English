@@ -58,7 +58,6 @@ export class AdminController {
     @Body() request: CreateStoryRequest,
   ) {
     try {
-      return files.audio[0];
       const newStory = this.connection.manager.create(Story, {
         audio: files.audio[0].filename,
         img: files.image[0].filename,
