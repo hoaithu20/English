@@ -19,7 +19,7 @@ export class Story extends BaseEntity {
   @Column()
   img: string;
 
-  @Column()
+  @Column({type: 'text'})
   content: string;
 
   @Column({ default: QuestionStatus.ACTIVE })
