@@ -49,6 +49,7 @@ export class UserService {
         content: i.content,
         audio: i.audio,
         background: i.img,
+        title: i.title
       })),
       count,
     ];
@@ -60,6 +61,7 @@ export class UserService {
       content: story.content,
       audio: story.audio,
       background: story.img,
+      title: story.title,
     };
   }
 }

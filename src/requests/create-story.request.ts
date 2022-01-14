@@ -8,6 +8,11 @@ export class CreateStoryRequest {
   content: string;
 
   @ApiProperty()
+  @IsOptional()
+  @IsString()
+  title: string;
+
+  @ApiProperty()
   @IsNumber()
   @IsOptional()
   storyId: number;

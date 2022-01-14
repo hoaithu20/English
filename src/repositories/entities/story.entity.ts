@@ -19,6 +19,9 @@ export class Story extends BaseEntity {
   @Column()
   img: string;
 
+  @Column()
+  title: string;
+
   @Column({type: 'text'})
   content: string;
 

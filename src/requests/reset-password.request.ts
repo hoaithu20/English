@@ -3,13 +3,13 @@ import { IsNotEmpty, IsNumber, IsString, Matches } from 'class-validator';
 import { ErrorCode } from 'src/constants/errorcode.constant';
 
 export class ResetPasswordRequest {
-  @ApiProperty()
-  @IsNumber()
-  otp: number;
+  // @ApiProperty()
+  // @IsNumber()
+  // otp: number;
 
-  @ApiProperty()
-  @IsNumber()
-  newOtp: number;
+  // @ApiProperty()
+  // @IsNumber()
+  // newOtp: number;
 
   @ApiProperty()
   @IsString()

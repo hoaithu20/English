@@ -62,6 +62,7 @@ export class AdminController {
         audio: files.audio[0].filename,
         img: files.image[0].filename,
         content: request.content,
+        title: request.title,
       });
       await this.connection.manager.save(newStory);
     } catch (err) {
@@ -87,14 +88,14 @@ export class AdminController {
     files: { audio?: Express.Multer.File; image?: Express.Multer.File },
     @Body() request: CreateStoryRequest,
   ) {
-    return "hello"
     try {
       const story = await this.connection.manager.findOneOrFail(Story, {
         id: request.storyId,
       });
-      story.audio = files.audio?.fieldname;
-      story.img = files.image?.fieldname;
-      story.content = request?.content;
+      if(files.audio[0].filename) story.audio=files.audio[0].filename;
+      if(files.image[0].filename) story.img = files.image[0].filename;
+      if(request.content) story.content = request.content;
+      if(request.title) story.title = request.title; 
       await this.connection.manager.save(story);
     } catch (err) {
       throw new BadRequestException({
