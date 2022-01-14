@@ -65,32 +65,32 @@ export class QuestionsService {
       admin.id === userId ? QuestionStatus.ACTIVE : QuestionStatus.INACTIVE;
 
     try {
-    await this.connection.transaction(async (manager) => {
-      const newQuestion = this.questionRepository.create({
-        title,
-        level,
-        status,
-        totalAnswer: request.answers.length,
-        user: userId as any,
-      });
-
-      await manager.save(newQuestion);
-      let correctAnswer;
-      for (const answer of answers) {
-        const newAnswer = this.answerRepository.create({
-          content: answer.content,
-          isTrue: answer.isCorrect,
-          question: newQuestion,
-          description: answer.explain,
+      await this.connection.transaction(async (manager) => {
+        const newQuestion = this.questionRepository.create({
+          title,
+          level,
+          status,
+          totalAnswer: request.answers.length,
+          user: userId as any,
         });
-        await manager.save(newAnswer);
-        if (newAnswer.isTrue === true) {
-          correctAnswer = newAnswer.id;
+
+        await manager.save(newQuestion);
+        let correctAnswer;
+        for (const answer of answers) {
+          const newAnswer = this.answerRepository.create({
+            content: answer.content,
+            isTrue: answer.isCorrect,
+            question: newQuestion,
+            description: answer.explain,
+          });
+          await manager.save(newAnswer);
+          if (newAnswer.isTrue === true) {
+            correctAnswer = newAnswer.id;
+          }
         }
-      }
-      newQuestion.correctAnswer = correctAnswer;
-      await manager.save(newQuestion);
-    });
+        newQuestion.correctAnswer = correctAnswer;
+        await manager.save(newQuestion);
+      });
     } catch (err) {
       throw new BadRequestException({
         code: ErrorCode.UNSUCCESS,

@@ -22,7 +22,7 @@ export class Story extends BaseEntity {
   @Column()
   title: string;
 
-  @Column({type: 'text'})
+  @Column({ type: 'text' })
   content: string;
 
   @Column({ default: QuestionStatus.ACTIVE })

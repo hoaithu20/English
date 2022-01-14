@@ -47,10 +47,7 @@ export class AdminController {
   })
   @Post('create-story')
   @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'audio' },
-      { name: 'image' },
-    ]),
+    FileFieldsInterceptor([{ name: 'audio' }, { name: 'image' }]),
   )
   async createStory(
     @UploadedFiles()
@@ -78,10 +75,7 @@ export class AdminController {
   })
   @Post('update-story')
   @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: 'audio'},
-      { name: 'image'},
-    ]),
+    FileFieldsInterceptor([{ name: 'audio' }, { name: 'image' }]),
   )
   async updateStory(
     @UploadedFiles()
@@ -92,10 +86,10 @@ export class AdminController {
       const story = await this.connection.manager.findOneOrFail(Story, {
         id: request.storyId,
       });
-      if(files.audio[0].filename) story.audio=files.audio[0].filename;
-      if(files.image[0].filename) story.img = files.image[0].filename;
-      if(request.content) story.content = request.content;
-      if(request.title) story.title = request.title; 
+      if (files.audio[0].filename) story.audio = files.audio[0].filename;
+      if (files.image[0].filename) story.img = files.image[0].filename;
+      if (request.content) story.content = request.content;
+      if (request.title) story.title = request.title;
       await this.connection.manager.save(story);
     } catch (err) {
       throw new BadRequestException({

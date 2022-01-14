@@ -49,7 +49,7 @@ export class UserService {
         content: i.content,
         audio: i.audio,
         background: i.img,
-        title: i.title
+        title: i.title,
       })),
       count,
     ];
