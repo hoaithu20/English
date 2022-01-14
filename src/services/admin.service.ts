@@ -5,7 +5,7 @@ import { Connection } from 'typeorm';
 
 @Injectable()
 export class AdminService {
-  constructor(private readonly connection: Connection) { }
+  constructor(private readonly connection: Connection) {}
 
   async approveQuestion(request: ApproveQuestionRequest) {
     await this.connection.manager
@@ -18,7 +18,5 @@ export class AdminService {
       .execute();
   }
 
-  async createStory() {
-    
-  }
+  async createStory() {}
 }

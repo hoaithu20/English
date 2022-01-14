@@ -8,21 +8,19 @@ import { AdminService } from 'src/services/admin.service';
 import { Helper } from 'src/utils/helper';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([StoryRepository]),
-        MulterModule.registerAsync({
-            useFactory: () => ({
-                storage: diskStorage({
-                    filename: Helper.customFileName,
-                    destination: './upload',
-                }),
-            }),
+  imports: [
+    TypeOrmModule.forFeature([StoryRepository]),
+    MulterModule.registerAsync({
+      useFactory: () => ({
+        storage: diskStorage({
+          filename: Helper.customFileName,
+          destination: './upload',
         }),
-    ],
-    providers: [AdminService],
-    controllers: [AdminController],
-    exports: [AdminService]
+      }),
+    }),
+  ],
+  providers: [AdminService],
+  controllers: [AdminController],
+  exports: [AdminService],
 })
-export class AdminModule {
-
-}
+export class AdminModule {}

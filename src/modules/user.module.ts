@@ -11,7 +11,11 @@ import { StoryRepository } from 'src/repositories/story.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserRepository, UserProfileRepository, StoryRepository]),
+    TypeOrmModule.forFeature([
+      UserRepository,
+      UserProfileRepository,
+      StoryRepository,
+    ]),
     MulterModule.registerAsync({
       useFactory: () => ({
         storage: diskStorage({

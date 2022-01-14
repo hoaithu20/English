@@ -53,7 +53,7 @@ export class History extends BaseEntity {
   @Column({ nullable: true, default: null, type: 'json' })
   questions: number[];
 
-  @Column({name: 'question_map', type: 'json', default: null})
+  @Column({ name: 'question_map', type: 'json', default: null })
   questionMap: QuestionMap[];
 
   @CreateDateColumn({ name: 'created_at' })

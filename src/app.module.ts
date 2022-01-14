@@ -28,7 +28,7 @@ import { AdminModule } from './modules/admin.module';
     AuthModule,
     UserModule,
     QuestionsModule,
-    AdminModule
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

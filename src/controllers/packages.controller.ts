@@ -77,23 +77,18 @@ export class PackagesController {
   }
 
   @ApiBody({
-    type: GetDetailHistoryRequest
+    type: GetDetailHistoryRequest,
   })
   @Post('get-detail-history')
   async getDetailHistory(
     @CurrUser() user: User,
     @Body() request: GetDetailHistoryRequest,
   ) {
-    return await this.packageService.getDetailHistory(
-      user.id,
-      request,
-    );
+    return await this.packageService.getDetailHistory(user.id, request);
   }
 
   @Post('leaderboard')
-  async getLeaderBoard(
-    @Body() request: GetLeaderBoardRequest,
-  ) {
+  async getLeaderBoard(@Body() request: GetLeaderBoardRequest) {
     return await this.packageService.getLeaderBoard(request);
   }
 }

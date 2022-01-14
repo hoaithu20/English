@@ -30,7 +30,7 @@ export class QuestionsService {
     private readonly historyRepo: HistoryRepository,
     private readonly pointRepo: PointRepo,
     private readonly connection: Connection,
-  ) { }
+  ) {}
 
   // async getListPackageOfUser() {}
 
@@ -65,32 +65,32 @@ export class QuestionsService {
       admin.id === userId ? QuestionStatus.ACTIVE : QuestionStatus.INACTIVE;
 
     //try {
-      await this.connection.transaction(async (manager) => {
-        const newQuestion = this.questionRepository.create({
-          title,
-          level,
-          status,
-          totalAnswer: request.answers.length,
-          user: userId as any,
-        });
-
-        await manager.save(newQuestion);
-        let correctAnswer;
-        for (const answer of answers) {
-          const newAnswer = this.answerRepository.create({
-            content: answer.content,
-            isTrue: answer.isCorrect,
-            question: newQuestion,
-            description: answer.explain,
-          });
-          await manager.save(newAnswer);
-          if ((newAnswer.isTrue === true)) {
-            correctAnswer = newAnswer.id;
-          }
-        }
-        newQuestion.correctAnswer = correctAnswer;
-        await manager.save(newQuestion);
+    await this.connection.transaction(async (manager) => {
+      const newQuestion = this.questionRepository.create({
+        title,
+        level,
+        status,
+        totalAnswer: request.answers.length,
+        user: userId as any,
       });
+
+      await manager.save(newQuestion);
+      let correctAnswer;
+      for (const answer of answers) {
+        const newAnswer = this.answerRepository.create({
+          content: answer.content,
+          isTrue: answer.isCorrect,
+          question: newQuestion,
+          description: answer.explain,
+        });
+        await manager.save(newAnswer);
+        if (newAnswer.isTrue === true) {
+          correctAnswer = newAnswer.id;
+        }
+      }
+      newQuestion.correctAnswer = correctAnswer;
+      await manager.save(newQuestion);
+    });
     // } catch (err) {
     //   throw new BadRequestException({
     //     code: ErrorCode.UNSUCCESS,
@@ -119,7 +119,7 @@ export class QuestionsService {
   }
 
   async getQuestion(userId: number, request: GetQuestionRequest) {
-    console.log(request)
+    console.log(request);
     const pageSize = request.pageSize || 10;
     const pageIndex = request.pageIndex || 1;
     let questionIds = [];
@@ -138,7 +138,7 @@ export class QuestionsService {
       .skip((pageIndex - 1) * pageSize)
       .take(pageSize)
       .leftJoinAndSelect('q.answers', 'a')
-      .orderBy('q.createdAt', 'DESC')
+      .orderBy('q.createdAt', 'DESC');
     if (request.type == GetQuestionType.ACTIVE) {
       query.where('q.status = :status', { status: QuestionStatus.ACTIVE });
     } else if (request.type == GetQuestionType.INACTIVE) {
@@ -152,7 +152,7 @@ export class QuestionsService {
     }
 
     if (request.level) {
-      console.log('level', request.level)
+      console.log('level', request.level);
       query.andWhere('q.level = :level', { level: request.level });
     }
     if (request.search) {
@@ -175,17 +175,24 @@ export class QuestionsService {
       .where('user_id = :userId', { userId })
       .getRawMany();
     let totalPoint = new BigNumber(0);
-    for(const i of points) {
+    for (const i of points) {
       totalPoint = totalPoint.plus(i.point);
     }
     const query = this.historyRepo
       .createQueryBuilder()
-      .where('user_id = :userId', { userId })
+      .where('user_id = :userId', { userId });
 
     const [question, pakcages] = await Promise.all([
-      query.clone().select('questions').andWhere('package_id IS NULL').getRawOne(),
-      query.select('package_id as packageId').andWhere('package_id IS NOT NULL').getRawMany()
-    ])
+      query
+        .clone()
+        .select('questions')
+        .andWhere('package_id IS NULL')
+        .getRawOne(),
+      query
+        .select('package_id as packageId')
+        .andWhere('package_id IS NOT NULL')
+        .getRawMany(),
+    ]);
 
     const allQuestion = await this.questionRepository
       .createQueryBuilder()
@@ -197,9 +204,9 @@ export class QuestionsService {
     return {
       totalPoint: formatDecimal(totalPoint),
       questions: question ? question.questions.length : 0,
-      packages: _.union(_.map(pakcages,'packageId')).length,
+      packages: _.union(_.map(pakcages, 'packageId')).length,
       totalQuestion: allQuestion,
       totalPackage: allPackage,
-    }
+    };
   }
 }

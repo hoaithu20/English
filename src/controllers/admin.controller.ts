@@ -1,5 +1,17 @@
-import { BadRequestException, Body, Controller, Post, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
-import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UploadedFile,
+  UploadedFiles,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { ErrorCode } from 'src/constants/errorcode.constant';
 import { UserRole } from 'src/constants/user-role.enum';
@@ -20,40 +32,43 @@ export class AdminController {
   constructor(
     private readonly adminService: AdminService,
     private readonly connection: Connection,
-  ) { }
+  ) {}
 
   @ApiBody({
-    type: ApproveQuestionRequest
+    type: ApproveQuestionRequest,
   })
   @Post('approve')
   async approveQuestion(@Body() request: ApproveQuestionRequest) {
-    return await this.adminService.approveQuestion(request)
+    return await this.adminService.approveQuestion(request);
   }
 
   @ApiBody({
     type: CreateStoryRequest,
   })
   @Post('create-story')
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'audio', maxCount: 1 },
-    { name: 'image', maxCount: 1 },
-  ]))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'audio', maxCount: 1 },
+      { name: 'image', maxCount: 1 },
+    ]),
+  )
   async createStory(
-    @UploadedFiles() files: { audio?: Express.Multer.File, image?: Express.Multer.File },
+    @UploadedFiles()
+    files: { audio?: Express.Multer.File; image?: Express.Multer.File },
     @Body() request: CreateStoryRequest,
-    ) {
-      try {
-        const newStory = this.connection.manager.create(Story, {
-          audio: files.audio.filename,
-          img: files.image.fieldname,
-          content: request.content,
-        })
-        await this.connection.manager.save(newStory);
-      } catch(err) {
-        throw new BadRequestException({
-          code: ErrorCode.UNSUCCESS,
-        })
-      }
+  ) {
+    try {
+      const newStory = this.connection.manager.create(Story, {
+        audio: files.audio.filename,
+        img: files.image.fieldname,
+        content: request.content,
+      });
+      await this.connection.manager.save(newStory);
+    } catch (err) {
+      throw new BadRequestException({
+        code: ErrorCode.UNSUCCESS,
+      });
+    }
     console.log(files);
   }
 
@@ -61,25 +76,30 @@ export class AdminController {
     type: CreateStoryRequest,
   })
   @Post('update-story')
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'audio', maxCount: 1 },
-    { name: 'image', maxCount: 1 },
-  ]))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'audio', maxCount: 1 },
+      { name: 'image', maxCount: 1 },
+    ]),
+  )
   async updateStory(
-    @UploadedFiles() files: { audio?: Express.Multer.File, image?: Express.Multer.File },
+    @UploadedFiles()
+    files: { audio?: Express.Multer.File; image?: Express.Multer.File },
     @Body() request: CreateStoryRequest,
-    ) {
-      try {
-        const story = await this.connection.manager.findOneOrFail(Story, {id: request.storyId});
-        story.audio = files.audio?.fieldname;
-        story.img = files.image?.fieldname;
-        story.content = request?.content;
-        await this.connection.manager.save(story);
-      } catch(err) {
-        throw new BadRequestException({
-          code: ErrorCode.UNSUCCESS,
-        })
-      }
+  ) {
+    try {
+      const story = await this.connection.manager.findOneOrFail(Story, {
+        id: request.storyId,
+      });
+      story.audio = files.audio?.fieldname;
+      story.img = files.image?.fieldname;
+      story.content = request?.content;
+      await this.connection.manager.save(story);
+    } catch (err) {
+      throw new BadRequestException({
+        code: ErrorCode.UNSUCCESS,
+      });
+    }
     console.log(files);
   }
 }

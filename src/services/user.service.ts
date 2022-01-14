@@ -10,7 +10,7 @@ export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly storyRepo: StoryRepository,
-  ) { }
+  ) {}
 
   async getProfile(userId: number) {
     const profile = await this.userRepository
@@ -38,10 +38,10 @@ export class UserService {
       .createQueryBuilder()
       .where('status = :status', { status: QuestionStatus.ACTIVE })
       .offset((index - 1) * size)
-      .limit(size)
+      .limit(size);
     const [stories, count] = await Promise.all([
       query.getMany(),
-      query.getCount()
+      query.getCount(),
     ]);
 
     return [
@@ -50,17 +50,16 @@ export class UserService {
         audio: i.audio,
         background: i.img,
       })),
-      count
-    ]
+      count,
+    ];
   }
 
   async getDetailStory(request: GetDetailStory) {
-    const story = await this.storyRepo
-    .findOneOrFail({id: request.storyId});
+    const story = await this.storyRepo.findOneOrFail({ id: request.storyId });
     return {
       content: story.content,
       audio: story.audio,
       background: story.img,
-    }
+    };
   }
 }
