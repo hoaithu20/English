@@ -17,4 +17,8 @@ export class AdminService {
       })
       .execute();
   }
+
+  async createStory() {
+    
+  }
 }

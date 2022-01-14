@@ -105,11 +105,11 @@ export class AuthService {
   }
 
   async resetPassword(request: ResetPasswordRequest) {
-    if (request.otp != request.newOtp) {
-      throw new BadRequestException({
-        code: ErrorCode.INVALID_OTP,
-      });
-    }
+    // if (request.otp != request.newOtp) {
+    //   throw new BadRequestException({
+    //     code: ErrorCode.INVALID_OTP,
+    //   });
+    // }
     if (request.newPassword !== request.confirmPassword) {
       throw new BadRequestException({
         code: ErrorCode.PASSWORD_NOT_MATCH,

@@ -7,10 +7,11 @@ import { UserService } from 'src/services/user.service';
 import { diskStorage } from 'multer';
 import { Helper } from 'src/utils/helper';
 import { UserProfileRepository } from 'src/repositories/user-profile.repository';
+import { StoryRepository } from 'src/repositories/story.repository';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserRepository, UserProfileRepository]),
+    TypeOrmModule.forFeature([UserRepository, UserProfileRepository, StoryRepository]),
     MulterModule.registerAsync({
       useFactory: () => ({
         storage: diskStorage({
