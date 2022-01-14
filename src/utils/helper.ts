@@ -6,7 +6,7 @@ export class Helper {
       fileExtention = '.jpg';
     } else if (file.mimetype.indexOf('png') > -1) {
       fileExtention = '.png';
-    } else if (file.mimetype.indexOf('mp3') > -1) {
+    } else if (file.mimetype.indexOf('mpeg') > -1) {
       fileExtention = '.mp3';
     }
     customFile = customFile + fileExtention;

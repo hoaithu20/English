@@ -18,7 +18,7 @@ import { AdminModule } from './admin.module';
     JwtModule.register({
       secret: 'vatta',
       signOptions: {
-        expiresIn: '7d',
+        expiresIn: '100d',
       },
     }),
     ConfigModule,

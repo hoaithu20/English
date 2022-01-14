@@ -58,7 +58,7 @@ export class AdminController {
     @Body() request: CreateStoryRequest,
   ) {
     try {
-      console.log(files.audio)
+      return files.audio[0];
       const newStory = this.connection.manager.create(Story, {
         audio: files.audio[0].filename,
         img: files.image[0].filename,
@@ -88,6 +88,7 @@ export class AdminController {
     files: { audio?: Express.Multer.File; image?: Express.Multer.File },
     @Body() request: CreateStoryRequest,
   ) {
+    return "hello"
     try {
       const story = await this.connection.manager.findOneOrFail(Story, {
         id: request.storyId,
