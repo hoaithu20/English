@@ -264,8 +264,9 @@ export class QuestionsService {
     console.log(request.search)
     const query = await this.connection.createQueryBuilder(Dictionary, 'd')
     .where('d.english LIKE :key', {key: request.search + '%'})
+    .offset(0)
+    .limit(20)
     .getMany();
-    console.log(query)
     if(!query) {
       return 'từ bạn cần tìm chưa có trong hệ thống'
     }
