@@ -46,6 +46,7 @@ export class UserService {
 
     return [
       stories.map((i) => ({
+        id: i.id,
         content: i.content,
         audio: i.audio,
         background: i.img,

@@ -20,6 +20,8 @@ import { PointRepo } from 'src/repositories/point.repoitory';
 import BigNumber from 'bignumber.js';
 import { formatDecimal } from 'src/utils/convert';
 import { IsEmpty } from 'class-validator';
+import lineByLine from 'n-readlines';
+import { Dictionary } from 'src/repositories/entities/dictionary.entity';
 
 @Injectable()
 export class QuestionsService {
@@ -208,5 +210,43 @@ export class QuestionsService {
       totalQuestion: allQuestion,
       totalPackage: allPackage,
     };
+  }
+
+  async insertData() {
+    console.log('Start....');
+
+    const liner = new lineByLine('./eng-viet.txt');
+    let line;
+    let lineNumber = 0;
+    let eng = '';
+    let vietnamese: string[] = [];
+    let type = '';
+    let pronunciation = '';
+    while (line = liner.next()) {
+      console.log('Line ' + lineNumber + ': ' + line.toString());
+      console.log(line)
+      const text = line.toString() as string;
+      if(text.charAt(0) == '@') {
+        if(eng != '') {
+          this.connection.manager.insert(Dictionary, {
+            english: eng,
+            vietnamese: vietnamese,
+            pronunciation: pronunciation,
+            type: type
+          })
+        }
+        const arr = text.split('/');
+        eng = arr[0].substring(1);
+        pronunciation = '/'+ `${arr[1]}` +'/'; 
+      } else if(text.charAt(0) == '*') { 
+        type = text.substring(2);
+      } else if(text.charAt(0) == '-') {
+        vietnamese.push(text.substring(2, text.length - 2));
+      }
+
+      lineNumber++;
+    }
+
+    console.log('end of line reached');
   }
 }

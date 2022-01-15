@@ -64,4 +64,9 @@ export class QuestionsController {
   async getStatics(@CurrUser() user) {
     return await this.questionService.getStatics(user.id);
   }
+
+  @Get('craw')
+  async crawData() {
+    return await this.questionService.insertData();
+  }
 }
