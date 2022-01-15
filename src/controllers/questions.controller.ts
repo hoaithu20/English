@@ -66,10 +66,10 @@ export class QuestionsController {
     return await this.questionService.getStatics(user.id);
   }
 
-  @Get('craw')
-  async crawData() {
-    return await this.questionService.insertData();
-  }
+  // @Get('craw')
+  // async crawData() {
+  //   return await this.questionService.insertData();
+  // }
 
   @ApiBody({
     type: DictionaryRequest
