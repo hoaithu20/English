@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { CurrUser } from 'src/decoraters/user.decorator';
 import { User } from 'src/repositories/entities/user.entity';
 import { CreateQuestionRequest } from 'src/requests/create-question.request';
+import { DictionaryRequest } from 'src/requests/dictionary.request';
 import { DoQuestionRequest } from 'src/requests/do-question.request';
 import { PagingRequest } from 'src/requests/paging.request';
 import { GetQuestionRequest } from 'src/requests/question.request';
@@ -69,4 +70,21 @@ export class QuestionsController {
   async crawData() {
     return await this.questionService.insertData();
   }
+
+  @ApiBody({
+    type: DictionaryRequest
+  })
+  @Post('find')
+  async dictionary(@Body() request: DictionaryRequest) {
+    return await this.questionService.dictionary(request);
+  } 
+
+  @ApiBody({
+    type: DictionaryRequest
+  })
+  @Post('suggest')
+  async suggest(@Body() request: DictionaryRequest) {
+    return await this.questionService.suggestString(request);
+  } 
+  
 }

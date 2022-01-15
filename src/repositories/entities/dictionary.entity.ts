@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -14,14 +15,15 @@ export class Dictionary extends BaseEntity {
   id: number;
 
   @Column()
+  @Index()
   english: string;
+ 
+  @Column()
+  type: string;
 
   @Column()
   pronunciation: string;
 
   @Column({type: 'json'})
   vietnamese: string[];
-
-  @Column()
-  type: string;
 }

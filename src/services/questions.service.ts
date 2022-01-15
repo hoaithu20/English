@@ -22,6 +22,7 @@ import { formatDecimal } from 'src/utils/convert';
 import { IsEmpty } from 'class-validator';
 import lineByLine from 'n-readlines';
 import { Dictionary } from 'src/repositories/entities/dictionary.entity';
+import { DictionaryRequest } from 'src/requests/dictionary.request';
 
 @Injectable()
 export class QuestionsService {
@@ -32,7 +33,7 @@ export class QuestionsService {
     private readonly historyRepo: HistoryRepository,
     private readonly pointRepo: PointRepo,
     private readonly connection: Connection,
-  ) {}
+  ) { }
 
   // async getListPackageOfUser() {}
 
@@ -217,14 +218,11 @@ export class QuestionsService {
 
     const liner = new lineByLine('./eng-viet.txt');
     let line;
-    let lineNumber = 0;
     let eng = '';
     let vietnamese: string[] = [];
     let type = '';
     let pronunciation = '';
     while (line = liner.next()) {
-      console.log('Line ' + lineNumber + ': ' + line.toString());
-      console.log(line)
       const text = line.toString() as string;
       if(text.charAt(0) == '@') {
         if(eng != '') {
@@ -233,20 +231,46 @@ export class QuestionsService {
             vietnamese: vietnamese,
             pronunciation: pronunciation,
             type: type
-          })
+          });
+          vietnamese = [];
+          eng = '';
+          pronunciation = '';
         }
         const arr = text.split('/');
-        eng = arr[0].substring(1);
+        eng = arr[0].substring(1, arr[0].length-1);
         pronunciation = '/'+ `${arr[1]}` +'/'; 
       } else if(text.charAt(0) == '*') { 
         type = text.substring(2);
       } else if(text.charAt(0) == '-') {
-        vietnamese.push(text.substring(2, text.length - 2));
+        vietnamese.push(text.substring(2, text.length));
       }
 
-      lineNumber++;
     }
 
     console.log('end of line reached');
+  }
+
+  async dictionary(request: DictionaryRequest) {
+    const query = await this.connection.createQueryBuilder(Dictionary, 'd')
+    .where('d.english = :key', {key: request.search})
+    .getOne();
+    if(!query) {
+      return 'từ bạn cần tìm chưa có trong hệ thống'
+    }
+    return query;
+  }
+
+  async suggestString(request: DictionaryRequest) {
+    console.log(request.search)
+    const query = await this.connection.createQueryBuilder(Dictionary, 'd')
+    .where('d.english LIKE :key', {key: request.search + '%'})
+    .getMany();
+    console.log(query)
+    if(!query) {
+      return 'từ bạn cần tìm chưa có trong hệ thống'
+    }
+    return query.map((i) => ({
+      english: i.english
+    }));
   }
 }
