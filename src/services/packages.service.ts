@@ -38,12 +38,21 @@ export class PackagesService {
     const page = request.pageIndex || 1;
     const pageSize = request.pageSize || 10;
     const packages = this.packageRepository
-      .createQueryBuilder()
-      .select('id, name, level, total_question as total')
-      .where('status = :st', { st: QuestionStatus.ACTIVE })
-      .orderBy('id', 'DESC')
-      .offset((page - 1) * pageSize)
-      .limit(pageSize);
+      .createQueryBuilder('p')
+      .select([
+        'p.id as id', 
+        'p.name as name', 
+        'p.level as `level`', 
+        'p.total_question as total', 
+        'p.time_out as timeOut',
+        'u.username as username'
+      ])
+      .leftJoin('p.user', 'u')
+      .where('p.status = :st', { st: QuestionStatus.ACTIVE })
+      .orderBy('p.id', 'DESC')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+
     return await Promise.all([packages.getRawMany(), packages.getCount()]);
   }
 
@@ -52,9 +61,21 @@ export class PackagesService {
     const pageSize = request.pageSize || 10;
 
     const packages = await this.packageRepository
-      .createQueryBuilder()
-      .where('id = :id', { id: request.packageId })
-      .getOne();
+      .createQueryBuilder('p')
+      .leftJoin('p.user', 'u')
+      .select([
+        'p.id as id',
+        'p.like as `like`',
+        'p.timeOut as timeOut',
+        'p.status as `status`',
+        'p.level as `level`',
+        'p.total_question as totalQuestion',
+        'p.name as name',
+        'u.username as username',
+        'p.questionIds as questionIds'
+      ])
+      .where('p.id = :id', { id: request.packageId })
+      .getRawOne();
     if (!packages) {
       throw new BadRequestException({
         code: ErrorCode.NOT_FOUND_PACKAGE,

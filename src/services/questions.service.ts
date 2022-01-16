@@ -197,19 +197,27 @@ export class QuestionsService {
         .getRawMany(),
     ]);
 
-    const allQuestion = await this.questionRepository
+    const allQuestion = this.questionRepository
       .createQueryBuilder()
       .where('status = :st', { st: QuestionStatus.ACTIVE })
-      .getCount();
-    const allPackage = await this.packageRepository
+    const [allQuestionNum, questionMineNum] = await Promise.all([
+      allQuestion.clone().getCount(),
+      allQuestion.andWhere('user_id = :userId', {userId}).getCount()
+    ])
+    const allPackage = this.packageRepository
       .createQueryBuilder()
-      .getCount();
+    const [allPackageNum, packageMineNum] = await Promise.all([
+      allPackage.clone().getCount(),
+      allPackage.where('user_id = :userId', {userId}).getCount()
+    ])
     return {
       totalPoint: formatDecimal(totalPoint),
-      questions: question ? question.questions.length : 0,
-      packages: _.union(_.map(pakcages, 'packageId')).length,
-      totalQuestion: allQuestion,
-      totalPackage: allPackage,
+      questionDo: question ? question.questions.length : 0,
+      packagesDo: _.union(_.map(pakcages, 'packageId')).length,
+      questionMine: questionMineNum,
+      packageMine: packageMineNum,
+      totalQuestion: allQuestionNum,
+      totalPackage: allPackageNum,
     };
   }
 
