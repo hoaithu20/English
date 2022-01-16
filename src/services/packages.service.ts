@@ -268,9 +268,7 @@ export class PackagesService {
   }
 
   async getDetailHistory(userId: number, request: GetDetailHistoryRequest) {
-    const pageIndex = request.pageIndex || 1;
-    const pageSize = request.pageSize || 10;
-
+    
     const history = await this.historyRepository
       .createQueryBuilder('h')
       .where('h.user_id = :userId AND h.id = :id', {
@@ -298,8 +296,6 @@ export class PackagesService {
       .where('q.id IN (:arr)', {
         arr: packages.questionIds,
       })
-      .offset((pageIndex - 1) * pageSize)
-      .limit(pageSize)
       .getMany();
     console.log(questions)
     const questionArr = [];
