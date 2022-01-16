@@ -148,12 +148,8 @@ export class PackagesService {
         answerId: item.answerId,
       });
     }
-    const maxPoint = this.configService.get('questionConfig')
-      .maxPoint as number;
-    const point = new BigNumber(countTrue)
-      .times(maxPoint)
-      .div(packages.totalQuestion)
-      .toFixed(2);
+    
+    const point = String(countTrue)
     await this.connection.transaction(async (manager) => {
       await this.connection.manager
         .createQueryBuilder()
