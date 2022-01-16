@@ -301,12 +301,14 @@ export class PackagesService {
       .offset((pageIndex - 1) * pageSize)
       .limit(pageSize)
       .getMany();
+    console.log(questions)
     const questionArr = [];
     console.log(history.questionMap);
     for (const item of history.questionMap) {
       const key = Object.keys(item);
       console.log(typeof key[0]);
       const question = this.findQuestionById(questions, Number(key[0]));
+      console.log('question', question)
       questionArr.push({
         question: {
           id: question.id,
