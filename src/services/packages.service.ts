@@ -44,7 +44,7 @@ export class PackagesService {
         'p.name as name', 
         'p.level as `level`', 
         'p.total_question as total', 
-        'p.time_out as timeOut',
+        'p.time_out as time',
         'u.username as username'
       ])
       .leftJoin('p.user', 'u')
@@ -66,7 +66,7 @@ export class PackagesService {
       .select([
         'p.id as id',
         'p.like as `like`',
-        'p.timeOut as timeOut',
+        'p.timeOut as time',
         'p.status as `status`',
         'p.level as `level`',
         'p.total_question as totalQuestion',
